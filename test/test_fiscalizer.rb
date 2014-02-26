@@ -13,7 +13,7 @@ class FiscalizerTest < Test::Unit::TestCase
 	CER_ISSUED = "OU=DEMO,O=FINA,C=HR"
 	PASSWORD = "12345678"
 	# Use P12
-	EXPORTED_KEYS = false
+	EXPORTED_KEYS = true
 	# Test specific info
 	UUID = "ca996cc7-fcc3-4c50-961b-40c8b875a5e8"
 	ECHO = "This is a simple test..."
@@ -48,11 +48,20 @@ class FiscalizerTest < Test::Unit::TestCase
 	end # fiscal_ruby_test
 
 	def test_echo
-		fiscal = Fiscalizer.new url: URL_FISKAL, 
-								key_public_path: KEY_PUBLIC_PATH,
-								key_private_path: KEY_PRIVATE_PATH,
-								certificate_path: CERTIFICATE_PATH,
-								certificate_issued_by: CER_ISSUED
+		fiscal = nil
+		if EXPORTED_KEYS
+			fiscal = Fiscalizer.new url: URL_FISKAL, 
+									key_public_path: KEY_PUBLIC_PATH,
+									key_private_path: KEY_PRIVATE_PATH,
+									certificate_path: CERTIFICATE_PATH,
+									certificate_issued_by: CER_ISSUED
+		else
+			fiscal = Fiscalizer.new url: URL_FISKAL,
+									certificate_path: CERTIFICATE_PATH,
+									certificate_p12_path: CERTIFICATE_P12_PATH,
+									certificate_issued_by: CER_ISSUED,
+									password: PASSWORD
+		end
 		echo = fiscal.echo text: ECHO
 		assert_equal ECHO, echo.response, "Echo response message does not match sent message"
 		assert echo.echo?, "Automatic echo check failed"
