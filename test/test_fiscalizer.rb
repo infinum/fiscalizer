@@ -13,7 +13,7 @@ class FiscalizerTest < Test::Unit::TestCase
 	CER_ISSUED = "OU=DEMO,O=FINA,C=HR"
 	PASSWORD = "12345678"
 	# Use P12
-	EXPORTED_KEYS = true
+	EXPORTED_KEYS = false
 	# Test specific info
 	UUID = "ca996cc7-fcc3-4c50-961b-40c8b875a5e8"
 	ECHO = "This is a simple test..."
