@@ -135,7 +135,7 @@ class Fiscalizer
 				end
 
 				body = soap_envelope(office_request_xml)
-				unsigned_document = Xmldsig::SignedDocument.new(body.doc.root.to_xml)
+				unsigned_document = Xmldsig_fiscalizer::SignedDocument.new(body.doc.root.to_xml)
 				signed_xml = unsigned_document.sign(@key_private)
 				signed_xml.sub! '<?xml version="1.0"?>', ''
 				signed_xml = signed_xml.gsub /^$\n/, ''
@@ -255,7 +255,7 @@ class Fiscalizer
 				end
 
 				body = soap_envelope(invoice_request_xml)
-				unsigned_document = Xmldsig::SignedDocument.new(body.doc.root.to_xml)
+				unsigned_document = Xmldsig_fiscalizer::SignedDocument.new(body.doc.root.to_xml)
 				signed_xml = unsigned_document.sign(@key_private)
 				signed_xml.sub! '<?xml version="1.0"?>', ''
 				signed_xml = signed_xml.gsub /^$\n/, ''

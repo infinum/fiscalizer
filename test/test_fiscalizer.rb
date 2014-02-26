@@ -5,10 +5,10 @@ require 'openssl'
 
 class FiscalizerTest < Test::Unit::TestCase
 	# Configure 
-	KEY_PUBLIC_PATH = "/path/to/test/assets/fiskal1.cert"
-	KEY_PRIVATE_PATH = "/path/to/test/assets/privateKey.key"
-	CERTIFICATE_PATH = "/path/to/test/assets/democacert.pem"
-	CERTIFICATE_P12_PATH = "/path/to/test/assets/fiskal1.pfx"
+	KEY_PUBLIC_PATH = "/test/assets/fiskal1.cert"
+	KEY_PRIVATE_PATH = "/test/assets/privateKey.key"
+	CERTIFICATE_PATH = "/test/assets/democacert.pem"
+	CERTIFICATE_P12_PATH = "/test/assets/fiskal1.pfx"
 	URL_FISKAL = "https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest"
 	CER_ISSUED = "OU=DEMO,O=FINA,C=HR"
 	PASSWORD = "12345678"
@@ -18,7 +18,7 @@ class FiscalizerTest < Test::Unit::TestCase
 	UUID = "ca996cc7-fcc3-4c50-961b-40c8b875a5e8"
 	ECHO = "This is a simple test..."
 	# Personal information
-	PIN = "00000000000" 
+	PIN = "00123456789" 
 	PIN_OPERATOR = "00000000000"
 
 	def test_initialization
