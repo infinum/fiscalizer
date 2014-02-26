@@ -3,7 +3,7 @@ fiscal = Fiscalizer.new certificate_p12_path: "/path/to/FISKAL 1.p12",
 
 # Generate office
 office = Fiscalizer::Office.new
-office.uuid = 
+office.uuid = "ca996cc7-fcc3-4c50-961b-40c8b875a5e8"
 office.time_sent = Time.now
 office.pin = "00123456789"
 office.office_label = "Poslovnica1"

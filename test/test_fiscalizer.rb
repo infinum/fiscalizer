@@ -5,10 +5,10 @@ require 'openssl'
 
 class FiscalizerTest < Test::Unit::TestCase
 	# Configure 
-	KEY_PUBLIC_PATH = "/path/to/fiskal1.cert"
-	KEY_PRIVATE_PATH = "/path/to/privateKey.key"
-	CERTIFICATE_PATH = "/path/to/democacert.pem"
-	CERTIFICATE_P12_PATH = "/path/to/fiskal1.pfx"
+	KEY_PUBLIC_PATH = "/path/to/test/assets/fiskal1.cert"
+	KEY_PRIVATE_PATH = "/path/to/test/assets/privateKey.key"
+	CERTIFICATE_PATH = "/path/to/test/assets/democacert.pem"
+	CERTIFICATE_P12_PATH = "/path/to/test/assets/fiskal1.pfx"
 	URL_FISKAL = "https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest"
 	CER_ISSUED = "OU=DEMO,O=FINA,C=HR"
 	PASSWORD = "12345678"
@@ -116,9 +116,9 @@ class FiscalizerTest < Test::Unit::TestCase
 
 		# Generate office
 		office = Fiscalizer::Office.new
-		office.uuid = 
+		office.uuid = UUID
 		office.time_sent = Time.now
-		office.pin = "00123456789"
+		office.pin = PIN
 		office.office_label = "Poslovnica1"
 		office.adress_street_name = "Somewhere"
 		office.adress_house_num = "42"
@@ -134,6 +134,13 @@ class FiscalizerTest < Test::Unit::TestCase
 
 		# Generate office
 		office_response = fiscal.fiscalize_office office
+
+		if office_response.errors?
+			puts "There were some nasty errors!"
+			office_response.errors.each do |error_code, error_message|
+				puts "	" + error_code + " : " + error_message
+			end
+		end
 
 		assert !office_response.errors?, "Returned an error"
 		assert office_response.uuid != nil, "'UUID' was not returned"
