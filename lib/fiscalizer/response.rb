@@ -1,14 +1,13 @@
-require 'nokogiri'
-require 'fiscalizer_ruby/echo'
-require 'fiscalizer_ruby/office'
-require 'fiscalizer_ruby/invoice'
+require 'fiscalizer/echo'
+require 'fiscalizer/office'
+require 'fiscalizer/invoice'
 
 class Fiscalizer
 	class Response
 
 		attr_accessor	:type, :errors, :object,
 						:uuid, :processed_at, :response,
-						:uniqe_identifier, :tns, :html_response
+						:unique_identifier, :tns, :html_response
 
 		def initialize(	type: 0, errors: {}, object: nil, html_response: nil, 
 						tns: "http://www.apis-it.hr/fin/2012/types/f73", automatic: true)
@@ -19,7 +18,7 @@ class Fiscalizer
 			@uuid = uuid
 			@processed_at = processed_at
 			@response = response
-			@uniqe_identifier = uniqe_identifier
+			@unique_identifier = unique_identifier
 			@tns = tns
 			@html_response = html_response
 
@@ -104,10 +103,10 @@ class Fiscalizer
 			def parse_response_invoice object
 				@uuid = Nokogiri::XML(object).root.xpath('//tns:IdPoruke', 'tns' => @tns).first
 				@processed_at = Nokogiri::XML(object).root.xpath('//tns:DatumVrijeme', 'tns' => @tns).first
-				@uniqe_identifier = Nokogiri::XML(object).root.xpath('//tns:Jir', 'tns' => @tns).first
+				@unique_identifier = Nokogiri::XML(object).root.xpath('//tns:Jir', 'tns' => @tns).first
 				@uuid = @uuid.text if @uuid != nil
 				@processed_at = @processed_at.text if @processed_at != nil
-				@uniqe_identifier = @uniqe_identifier.text if @uniqe_identifier != nil
+				@unique_identifier = @unique_identifier.text if @unique_identifier != nil
 			end # parse_response_office
 
 			def parse_response_errors object

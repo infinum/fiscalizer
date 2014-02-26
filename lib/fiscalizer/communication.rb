@@ -1,9 +1,3 @@
-require 'uri'
-require 'net/http'
-require 'openssl'
-require 'nokogiri'
-require 'xmldsig'
-
 class Fiscalizer
 	class Communication
 		attr_accessor 	:url, :tns, :schemaLocation, 
@@ -174,9 +168,9 @@ class Fiscalizer
 							xml['tns'].OznSlijed 	object.consistance_mark
 							# Invoice issued numbers
 							xml['tns'].BrRac {
-								xml['tns'].BrOznRac object.issued_number
-								xml['tns'].OznPosPr object.issued_office
-								xml['tns'].OznNapUr object.issued_machine
+								xml['tns'].BrOznRac object.issued_number.to_s
+								xml['tns'].OznPosPr object.issued_office.to_s
+								xml['tns'].OznNapUr object.issued_machine.to_s
 							}
 							# Optional info
 							# Tax VAT

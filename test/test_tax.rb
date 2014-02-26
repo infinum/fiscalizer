@@ -1,5 +1,5 @@
 require "test/unit"
-require "fiscalizer_ruby"
+require "fiscalizer"
 
 class TaxTest < Test::Unit::TestCase
 

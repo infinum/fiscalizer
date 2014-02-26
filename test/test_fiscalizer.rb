@@ -1,17 +1,17 @@
 require "test/unit"
-require "fiscalizer_ruby"
+require "fiscalizer"
 require 'nokogiri'
 require 'openssl'
 
-class FiscalizerRubyTest < Test::Unit::TestCase
+class FiscalizerTest < Test::Unit::TestCase
 	# Configure 
-	KEY_PUBLIC_PATH = "/full/path/to/assets/fiskal1.cert"
-	KEY_PRIVATE_PATH = "/full/path/to/assets/privateKey.key"
-	CERTIFICATE_PATH = "/full/path/to/assets/democacert.pem"
-	CERTIFICATE_P12_PATH = "/full/path/to/assets/fiskal1.pfx"
+	KEY_PUBLIC_PATH = "/path/to/fiskal1.cert"
+	KEY_PRIVATE_PATH = "/path/to/privateKey.key"
+	CERTIFICATE_PATH = "/path/to/democacert.pem"
+	CERTIFICATE_P12_PATH = "/path/to/fiskal1.pfx"
 	URL_FISKAL = "https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest"
 	CER_ISSUED = "OU=DEMO,O=FINA,C=HR"
-	PASSWORD = "mySuperS3cr3tPassword"
+	PASSWORD = "12345678"
 	# Use P12
 	EXPORTED_KEYS = false
 	# Test specific info
@@ -60,7 +60,7 @@ class FiscalizerRubyTest < Test::Unit::TestCase
 
 	def test_office
 		# Configuration
-		use_exported_keys = false
+		use_exported_keys = true
 		# -- Here Be Dragons --
 		fiscal = nil
 		if use_exported_keys
@@ -100,6 +100,7 @@ class FiscalizerRubyTest < Test::Unit::TestCase
 	end # test_office
 
 	def test_invoice
+		use_exported_keys = true
 		# -- Here Be Dragons --
 		fiscal = nil
 		if use_exported_keys
@@ -159,7 +160,7 @@ class FiscalizerRubyTest < Test::Unit::TestCase
 		assert !invoice.errors?, "Returned an error"
 		assert invoice.uuid != nil, "'UUID' was not returned"
 		assert invoice.processed_at != nil, "'Processed at' was not returned"
-		assert invoice.uniqe_identifier != nil, "Uniqe Identifier (JIR) was not returned"
+		assert invoice.unique_identifier != nil, "Uniqe Identifier (JIR) was not returned"
 	end # test_invoice
 
 end # FiscalizerRubyTest

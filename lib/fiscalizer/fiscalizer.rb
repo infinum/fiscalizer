@@ -1,9 +1,8 @@
-require 'fiscalizer_ruby/communication'
-require 'fiscalizer_ruby/echo'
-require 'fiscalizer_ruby/office'
-require 'fiscalizer_ruby/invoice'
-require 'fiscalizer_ruby/response'
-require 'openssl'
+require 'fiscalizer/communication'
+require 'fiscalizer/echo'
+require 'fiscalizer/office'
+require 'fiscalizer/invoice'
+require 'fiscalizer/response'
 
 class Fiscalizer
 
@@ -42,7 +41,7 @@ class Fiscalizer
 			end
 		end # new
 
-		def echo text: "Hello World!", echo: nil
+		def echo echo=nil, text: "Hello World!"
 			# Build echo request
 			echo = Fiscalizer::Echo.new text: text if echo == nil
 			# Send it
@@ -54,11 +53,11 @@ class Fiscalizer
 			return response
 		end # echo
 
-		def office(	uuid: nil, time_sent: nil, pin: nil, 
-					office_label: nil, adress_street_name: nil, adress_house_num: nil,
-					adress_house_num_addendum: nil, adress_post_num: nil, adress_settlement: nil,
-					adress_township: nil, adress_other: nil, office_time: nil, take_effect_date: nil,
-					closure_mark: nil, specific_purpose: nil, office: nil, reconnect_attempts: 3 )
+		def fiscalize_office(	office=nil, uuid: nil, time_sent: nil, pin: nil, 
+								office_label: nil, adress_street_name: nil, adress_house_num: nil,
+								adress_house_num_addendum: nil, adress_post_num: nil, adress_settlement: nil,
+								adress_township: nil, adress_other: nil, office_time: nil, take_effect_date: nil,
+								closure_mark: nil, specific_purpose: nil, reconnect_attempts: 3 )
 			# Test connection
 			response_alive = echo text: "Is the server alive?"
 			recconect_attempted = 1
@@ -85,17 +84,19 @@ class Fiscalizer
 			raw_response = comm.send office
 			response = Fiscalizer::Response.new object: office, html_response: raw_response, tns: @tns
 			return response
-		end # office
+		end # fiscalize_office
+		alias_method :office, :fiscalize_office
+		alias_method :fiscalize_office_space, :fiscalize_office
 
-		def invoice(	uuid: nil, time_sent: nil, pin: nil, 
-						in_vat_system: nil, time_issued: nil, consistance_mark: nil, 
-						issued_number: nil, issued_office: nil, issued_machine: nil, 
-						tax_vat: [], tax_spending: [], tax_other: [],
-						value_tax_liberation: nil, value_tax_margin: nil, value_non_taxable: nil,
-						fees: [], summed_total: nil, payment_method: nil, 
-						operator_pin: nil, security_code: nil, subsequent_delivery: nil,
-						paragon_label: nil, specific_purpose: nil, uniqe_identifier: nil,
-						automatic: true, invoice: nil, reconnect_attempts: 3)
+		def fiscalize_invoice(	invoice=nil, uuid: nil, time_sent: nil, pin: nil, 
+								in_vat_system: nil, time_issued: nil, consistance_mark: nil, 
+								issued_number: nil, issued_office: nil, issued_machine: nil, 
+								tax_vat: [], tax_spending: [], tax_other: [],
+								value_tax_liberation: nil, value_tax_margin: nil, value_non_taxable: nil,
+								fees: [], summed_total: nil, payment_method: nil, 
+								operator_pin: nil, security_code: nil, subsequent_delivery: nil,
+								paragon_label: nil, specific_purpose: nil, unique_identifier: nil,
+								automatic: true, reconnect_attempts: 3)
 			# Test connection
 			response_alive = echo text: "Is the server alive"
 			recconect_attempted = 1
@@ -117,7 +118,7 @@ class Fiscalizer
 												value_tax_liberation: value_tax_liberation, value_tax_margin: value_tax_margin, value_non_taxable: value_non_taxable,
 												fees: fees, summed_total: summed_total, payment_method: payment_method, 
 												operator_pin: operator_pin, security_code: security_code, subsequent_delivery: subsequent_delivery,
-												paragon_label: paragon_label, specific_purpose: specific_purpose, uniqe_identifier: uniqe_identifier,
+												paragon_label: paragon_label, specific_purpose: specific_purpose, unique_identifier: unique_identifier,
 												automatic: automatic) if invoice == nil
 			# Send it
 			comm = Fiscalizer::Communication.new 	url: @url, tns: @tns, schemaLocation: @schemaLocation, 
@@ -126,21 +127,22 @@ class Fiscalizer
 			raw_response = comm.send invoice
 			response = Fiscalizer::Response.new object: invoice, html_response: raw_response, tns: @tns
 			return response
-		end # invoice
+		end # fiscalize_invoice
+		alias_method :invoice, :fiscalize_invoice
 
 		def certificate_p12_path= path
 			@certificate_p12_path = path
 			export_keys
 		end # certificate_p12_path
 
-		def export_keys password
-			if @certificate_p12_path != nil && File.exists?(@certificate_p12_path) && password != nil
-				extracted = OpenSSL::PKCS12.new(File.read(@certificate_p12_path), password)
-				@key_public  = OpenSSL::X509::Certificate.new(extracted.certificate)
-				@key_private = OpenSSL::PKey::RSA.new(extracted.key)
-				@certificate = OpenSSL::X509::Certificate.new(extracted.ca_certs.first.to_s) if extracted.ca_certs != nil && extracted.ca_certs.size != 0
-			end
-
-		end # export_keys
+		private
+			def export_keys password
+				if @certificate_p12_path != nil && File.exists?(@certificate_p12_path) && password != nil
+					extracted = OpenSSL::PKCS12.new(File.read(@certificate_p12_path), password)
+					@key_public  = OpenSSL::X509::Certificate.new(extracted.certificate)
+					@key_private = OpenSSL::PKey::RSA.new(extracted.key)
+					@certificate = OpenSSL::X509::Certificate.new(extracted.ca_certs.first.to_s) if extracted.ca_certs != nil && extracted.ca_certs.size != 0
+				end
+			end # export_keys
 
 end # FiscalizerRuby

@@ -1,5 +1,5 @@
-require 'fiscalizer_ruby/tax'
-require 'fiscalizer_ruby/fee'
+require 'fiscalizer/tax'
+require 'fiscalizer/fee'
 
 class Fiscalizer
 	class Invoice
@@ -11,7 +11,7 @@ class Fiscalizer
 							:value_tax_liberation, :value_tax_margin, :value_non_taxable,
 							:fees, :summed_total, :payment_method, 
 							:operator_pin, :security_code, :subsequent_delivery,
-							:paragon_label, :specific_purpose, :uniqe_identifier,
+							:paragon_label, :specific_purpose, :unique_identifier,
 							:automatic, :generated_xml
 
 			def initialize(	uuid: nil, time_sent: nil, pin: nil, 
@@ -21,7 +21,7 @@ class Fiscalizer
 							value_tax_liberation: nil, value_tax_margin: nil, value_non_taxable: nil,
 							fees: [], summed_total: nil, payment_method: nil, 
 							operator_pin: nil, security_code: nil, subsequent_delivery: nil,
-							paragon_label: nil, specific_purpose: nil, uniqe_identifier: nil,
+							paragon_label: nil, specific_purpose: nil, unique_identifier: nil,
 							automatic: true)
 				@uuid = uuid
 				@time_sent = time_sent
@@ -46,7 +46,7 @@ class Fiscalizer
 				@subsequent_delivery = subsequent_delivery
 				@paragon_label = paragon_label
 				@specific_purpose = specific_purpose
-				@uniqe_identifier = uniqe_identifier
+				@unique_identifier = unique_identifier
 				@automatic = automatic
 
 				autocomplete_data_set if @automatic
@@ -154,11 +154,11 @@ class Fiscalizer
 			end # summed_total_str
 
 			def payment_method
-				return "G" if @payment_method[0].downcase == "g" || @payment_method.downcase == "cash"
-				return "K" if @payment_method[0].downcase == "k" || @payment_method.downcase == "card"
-				return "C" if @payment_method[0].downcase == "c" || @payment_method.downcase == "check"
-				return "T" if @payment_method[0].downcase == "t" || @payment_method.downcase == "transaction"
-				return "O" if @payment_method[0].downcase == "o" || @payment_method.downcase == "other"
+				return "G" if @payment_method[0].downcase == "g"
+				return "K" if @payment_method[0].downcase == "k"
+				return "C" if @payment_method[0].downcase == "c"
+				return "T" if @payment_method[0].downcase == "t"
+				return "O" if @payment_method[0].downcase == "o"
 				raise "Invalid payment method type!"
 			end # payment_method
 
