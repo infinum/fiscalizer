@@ -53,26 +53,26 @@ class Fiscalizer
 			end # initialize
 
 			# Add taxes
-			def add_tax_vat base: 0.0, rate: 0.0, name: "", tax: nil
+			def add_tax_vat tax=nil, base: 0.0, rate: 0.0, name: ""
 				tax = Fiscalizer::Tax.new base: base, rate: rate, name: name if tax == nil
 				@tax_vat = Array.new if @tax_vat.class != Array
 				@tax_vat << tax
 			end # add_tax_vat
 
-			def add_tax_spending base: 0.0, rate: 0.0, name: "", tax: nil
+			def add_tax_spending tax=nil, base: 0.0, rate: 0.0, name: ""
 				tax = Fiscalizer::Tax.new base: base, rate: rate, name: name if tax == nil
 				@tax_spending = Array.new if @tax_spending.class != Array
 				@tax_spending << tax
 			end # add_tax_spending
 
-			def add_tax_other base: 0.0, rate: 0.0, name: "", tax: nil
+			def add_tax_other tax=nil, base: 0.0, rate: 0.0, name: ""
 				tax = Fiscalizer::Tax.new base: base, rate: rate, name: name if tax == nil
 				@tax_other = Array.new if @tax_other.class != Array
 				@tax_other << tax
 			end # add_tax_spending
 
 			# Add fees
-			def add_fee name: "", value: 0.0, fee: nil
+			def add_fee fee=nil, name: "", value: 0.0
 				fee = Fiscalizer::Fee.new name: base, value: rate if fee == nil
 				@fee << fee
 			end # add_fee

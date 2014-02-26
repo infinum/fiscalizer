@@ -24,21 +24,21 @@ end
 	taxes_other << tax
 end
 # Generate invoice
-invoice_response = fiscal.invoice 	uuid: UUID,
-									time_sent: Time.now,
-									pin: PIN,
-									in_vat_system: true,
-									time_issued: Time.now - 3600,
-									consistance_mark: "P",
-									issued_number: "1",
-									issued_office: "Pm2",
-									issued_machine: "3",
-									tax_vat: taxes_vat,
-									tax_spending: taxes_spending,
-									tax_other: taxes_other,
-									payment_method: "g",
-									operator_pin: PIN_OPERATOR,
-									subsequent_delivery: false,
-									value_non_taxable: 200.0
+invoice_response = fiscal.fiscalize_invoice 	uuid: UUID,
+												time_sent: Time.now,
+												pin: "00123456789",
+												in_vat_system: true,
+												time_issued: Time.now - 3600,
+												consistance_mark: "P",
+												issued_number: "1",
+												issued_office: "Pm2",
+												issued_machine: "3",
+												tax_vat: taxes_vat,
+												tax_spending: taxes_spending,
+												tax_other: taxes_other,
+												payment_method: "g",
+												operator_pin: "12345678900",
+												subsequent_delivery: false,
+												value_non_taxable: 200.0
 
 puts "The server returned the following JIR: " + invoice_response.unique_identifier if !invoice_response.errors?

@@ -59,11 +59,9 @@ class FiscalizerTest < Test::Unit::TestCase
 	end # test_echo
 
 	def test_office
-		# Configuration
-		use_exported_keys = true
 		# -- Here Be Dragons --
 		fiscal = nil
-		if use_exported_keys
+		if EXPORTED_KEYS
 			fiscal = Fiscalizer.new url: URL_FISKAL, 
 									key_public_path: KEY_PUBLIC_PATH,
 									key_private_path: KEY_PRIVATE_PATH,
@@ -99,11 +97,53 @@ class FiscalizerTest < Test::Unit::TestCase
 		assert office.processed_at != nil, "'Processed at' was not returned"
 	end # test_office
 
-	def test_invoice
-		use_exported_keys = true
+	def test_office_object
 		# -- Here Be Dragons --
 		fiscal = nil
-		if use_exported_keys
+		if EXPORTED_KEYS
+			fiscal = Fiscalizer.new url: URL_FISKAL, 
+									key_public_path: KEY_PUBLIC_PATH,
+									key_private_path: KEY_PRIVATE_PATH,
+									certificate_path: CERTIFICATE_PATH,
+									certificate_issued_by: CER_ISSUED
+		else
+			fiscal = Fiscalizer.new url: URL_FISKAL,
+									certificate_path: CERTIFICATE_PATH,
+									certificate_p12_path: CERTIFICATE_P12_PATH,
+									certificate_issued_by: CER_ISSUED,
+									password: PASSWORD
+		end
+
+		# Generate office
+		office = Fiscalizer::Office.new
+		office.uuid = 
+		office.time_sent = Time.now
+		office.pin = "00123456789"
+		office.office_label = "Poslovnica1"
+		office.adress_street_name = "Somewhere"
+		office.adress_house_num = "42"
+		office.adress_house_num_addendum = "AD"
+		office.adress_post_num = "10000"
+		office.adress_settlement = "Block 25-C"
+		office.adress_township = "Vogsphere"
+		office.adress_other = nil
+		office.office_time = "Pon-Pet: 8:00-16:00"
+		office.take_effect_date = Time.now + 3600 * 24 * 7
+		office.closure_mark = nil
+		office.specific_purpose = nil
+
+		# Generate office
+		office_response = fiscal.fiscalize_office office
+
+		assert !office_response.errors?, "Returned an error"
+		assert office_response.uuid != nil, "'UUID' was not returned"
+		assert office_response.processed_at != nil, "'Processed at' was not returned"
+	end # test_office_object
+
+	def test_invoice
+		# -- Here Be Dragons --
+		fiscal = nil
+		if EXPORTED_KEYS
 			fiscal = Fiscalizer.new url: URL_FISKAL, 
 									key_public_path: KEY_PUBLIC_PATH,
 									key_private_path: KEY_PRIVATE_PATH,
