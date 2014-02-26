@@ -194,6 +194,8 @@ Direct usage of the `Fiscalizer::Communication` class is not advised!
  * __paragon_label__ : Oznaka paragon računa
  * __specific_purpose__ : Specifična namjena
  * __unique_identifier__ : Jedinstveni identifikator računa (JIR)
+ * __base__ : Osnovica
+ * __rate__ : Porezna stopa
 
 # Credits
 
