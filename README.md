@@ -199,7 +199,7 @@ Direct usage of the `Fiscalizer::Communication` class is not advised!
 
 # Credits
 
-Phrasing is maintained and sponsored by
+Fiscalizer is maintained and sponsored by
 [Infinum](http://www.infinum.co).
 
 ![Infinum](http://www.infinum.co/system/logo.png)

@@ -1,4 +1,4 @@
-Copyright (c) 2014 Stanko Krtalić
+Copyright (c) 2014 Infinum
 
 MIT License
 
