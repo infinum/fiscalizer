@@ -1,10 +1,10 @@
 class Fiscalizer
 	class Communication
-		attr_accessor 	:url, :tns, :schemaLocation, 
-						:key_public, :key_private, :certificate, 
+		attr_accessor 	:url, :tns, :schemaLocation,
+						:key_public, :key_private, :certificate,
 						:certificate_issued_by
 
-		def initialize(	tns: "http://www.apis-it.hr/fin/2012/types/f73", 
+		def initialize(	tns: "http://www.apis-it.hr/fin/2012/types/f73",
 						url: "https://cis.porezna-uprava.hr:8449/FiskalizacijaService",
 						schemaLocation: "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd",
 						key_public: nil, key_private: nil, certificate: nil,
@@ -34,6 +34,19 @@ class Fiscalizer
 			http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
 			# Encode object
+			encoded_object = encode_object object
+			return false if encoded_object.nil?
+
+			# Send it
+			request				  = Net::HTTP::Post.new(uri.request_uri)
+			request.content_type	 = 'application/xml'
+			request.body 			= encoded_object
+			response 				= http.request(request)
+
+			return response
+		end # send
+
+		def encode_object object
 			encoded_object = nil
 			if object.class == Echo
 				encoded_object = encode_echo object
@@ -41,26 +54,32 @@ class Fiscalizer
 				encoded_object = encode_office object
 			elsif object.class == Invoice
 				encoded_object = encode_invoice object
-			else
-				# Something broke so we return false, 
-				# this enables us to check sucess in an if statement
-				return false
 			end
+			return encoded_object
+		end # encode_object
 
-			# Send it
-			request 				= Net::HTTP::Post.new(uri.request_uri)
-			request.content_type 	= 'application/xml'
-			request.body 			= encoded_object
-			response 				= http.request(request)
-			
-			return response
-		end # send
-
+		def generate_security_code invoice
+			# Build data set to generate security code
+			unsigned_code = ""
+			unsigned_code += invoice.pin
+			unsigned_code += invoice.time_sent_str " "
+			unsigned_code += invoice.issued_number.to_s
+			unsigned_code += invoice.issued_office.to_s
+			unsigned_code += invoice.issued_machine.to_s
+			unsigned_code += invoice.summed_total_str
+			# Sign with my private key
+			signed_code = OpenSSL::PKey::RSA.new(key_private).sign(OpenSSL::Digest::SHA1.new, unsigned_code)
+			# Create a MD5 digest from it
+			md5_digest = Digest::MD5.hexdigest(signed_code)
+			invoice.security_code = md5_digest
+			return md5_digest
+		end # generate_security_code
+		
 		private
 			def encode_echo object
 				echo_xml = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
 					xml['tns'].EchoRequest(
-						'xmlns:tns' => @tns, 
+						'xmlns:tns' => @tns,
 						'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
 						'xsi:schemaLocation' => @schemaLocation
 					) {
@@ -75,7 +94,7 @@ class Fiscalizer
 			def encode_office object
 				office_request_xml = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
 					xml['tns'].PoslovniProstorZahtjev(
-						'xmlns:tns' => @tns, 
+						'xmlns:tns' => @tns,
 						'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
 						'xsi:schemaLocation' => schemaLocation,
 						'Id' => 'PoslovniProstorZahtjev'
@@ -149,7 +168,7 @@ class Fiscalizer
 				generate_security_code object
 				invoice_request_xml = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
 					xml['tns'].RacunZahtjev(
-						'xmlns:tns' => @tns, 
+						'xmlns:tns' => @tns,
 						'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
 						'xsi:schemaLocation' => schemaLocation,
 						'Id' => 'RacunZahtjev'
@@ -275,22 +294,6 @@ class Fiscalizer
 				end
 			end # soap_envelope
 
-			def generate_security_code invoice
-				# Build data set to generate security code
-				unsigned_code = ""
-				unsigned_code += invoice.pin
-				unsigned_code += invoice.time_sent_str " "
-				unsigned_code += invoice.issued_number.to_s
-				unsigned_code += invoice.issued_office.to_s
-				unsigned_code += invoice.issued_machine.to_s
-				unsigned_code += invoice.summed_total_str
-				# Sign with my private key
-				signed_code = OpenSSL::PKey::RSA.new(key_private).sign(OpenSSL::Digest::SHA1.new, unsigned_code)
-				# Create a MD5 digest from it
-				md5_digest = Digest::MD5.hexdigest(signed_code)
-				invoice.security_code = md5_digest
-				return md5_digest
-			end # generate_security_code
 
 	end # Communication
 end # Fiscalizer
