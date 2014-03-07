@@ -118,7 +118,7 @@ class Fiscalizer
 									xml['tns'].Naselje 			object.adress_settlement
 									xml['tns'].Opcina 			object.adress_township
 								} if object.adress_other == nil
-								xml['tns'].OstaliTipoviPP 		object.adress_other if object.adress_other != nil
+								xml['tns'].OstaliTipoviPP 		object.adress_other
 							}
 							xml['tns'].RadnoVrijeme			object.office_time
 							xml['tns'].DatumPocetkaPrimjene	object.take_effect_date_str

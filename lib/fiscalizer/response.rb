@@ -110,7 +110,7 @@ class Fiscalizer
 			end # parse_response_office
 
 			def parse_response_errors object
-				raw_errors = Nokogiri::XML(object).root.xpath('//tns:Greske', 'tns' => @tns)
+				raw_errors = Nokogiri::XML(object).root.xpath('//tns:Greska', 'tns' => @tns)
 				raw_errors.each do |raw_error|
 					error_code = raw_error.xpath('//tns:SifraGreske', 'tns' => @tns).first
 					error_message = raw_error.xpath('//tns:PorukaGreske', 'tns' => @tns).first
