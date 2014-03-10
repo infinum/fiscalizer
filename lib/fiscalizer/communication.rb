@@ -111,12 +111,12 @@ class Fiscalizer
 							xml['tns'].OznPoslProstora 	object.office_label
 							xml['tns'].AdresniPodatak {
 								xml['tns'].Adresa {
-									xml['tns'].Ulica 			object.adress_street_name
-									xml['tns'].KucniBroj 		object.adress_house_num
-									xml['tns'].KucniBrojDodatak	object.adress_house_num_addendum
-									xml['tns'].BrojPoste 		object.adress_post_num
-									xml['tns'].Naselje 			object.adress_settlement
-									xml['tns'].Opcina 			object.adress_township
+									xml['tns'].Ulica 			object.adress_street_name 			if object.adress_street_name != nil
+									xml['tns'].KucniBroj 		object.adress_house_num 			if object.adress_house_num != nil
+									xml['tns'].KucniBrojDodatak	object.adress_house_num_addendum 	if object.adress_house_num_addendum != nil
+									xml['tns'].BrojPoste 		object.adress_post_num 				if object.adress_post_num != nil
+									xml['tns'].Naselje 			object.adress_settlement 			if object.adress_settlement != nil
+									xml['tns'].Opcina 			object.adress_township 				if object.adress_township != nil
 								} if object.adress_other == nil
 								xml['tns'].OstaliTipoviPP 		object.adress_other if object.adress_other != nil
 							}
