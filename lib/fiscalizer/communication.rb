@@ -111,14 +111,14 @@ class Fiscalizer
 							xml['tns'].OznPoslProstora 	object.office_label
 							xml['tns'].AdresniPodatak {
 								xml['tns'].Adresa {
-									xml['tns'].Ulica 			object.adress_street_name 			if object.adress_street_name != nil
-									xml['tns'].KucniBroj 		object.adress_house_num 			if object.adress_house_num != nil
-									xml['tns'].KucniBrojDodatak	object.adress_house_num_addendum 	if object.adress_house_num_addendum != nil
-									xml['tns'].BrojPoste 		object.adress_post_num 				if object.adress_post_num != nil
-									xml['tns'].Naselje 			object.adress_settlement 			if object.adress_settlement != nil
-									xml['tns'].Opcina 			object.adress_township 				if object.adress_township != nil
-								} if object.adress_other == nil
-								xml['tns'].OstaliTipoviPP 		object.adress_other if object.adress_other != nil
+									xml['tns'].Ulica 			object.adress_street_name 			if object.adress_street_name != nil && object.adress_street_name.length != 0
+									xml['tns'].KucniBroj 		object.adress_house_num 			if object.adress_house_num != nil && object.adress_house_num.length != 0
+									xml['tns'].KucniBrojDodatak	object.adress_house_num_addendum 	if object.adress_house_num_addendum != nil && object.adress_house_num_addendum.length != 0
+									xml['tns'].BrojPoste 		object.adress_post_num 				if object.adress_post_num != nil && object.adress_post_num.length != 0
+									xml['tns'].Naselje 			object.adress_settlement 			if object.adress_settlement != nil && object.adress_settlement.length != 0
+									xml['tns'].Opcina 			object.adress_township 				if object.adress_township != nil && object.adress_township.length != 0
+								} if object.adress_other == nil || object.adress_other.length == 0
+								xml['tns'].OstaliTipoviPP 		object.adress_other if object.adress_other != nil && object.adress_other.length != 0
 							}
 							xml['tns'].RadnoVrijeme			object.office_time
 							xml['tns'].DatumPocetkaPrimjene	object.take_effect_date_str
