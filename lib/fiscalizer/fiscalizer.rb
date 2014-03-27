@@ -9,14 +9,15 @@ class Fiscalizer
 		# Accessible attributes
 		attr_accessor 	:url, :key_public_path, :key_private_path, :certificate_path,
 						:key_private, :key_public, :certificate,
-						:tns, :schemaLocation, :certificate_issued_by
+						:tns, :schemaLocation, :certificate_issued_by,
+						:timeout
 
 		# Public methods
 		def initialize(	url: "https://cis.porezna-uprava.hr:8449/FiskalizacijaService", 
 						key_public_path: nil, key_private_path: nil, certificate_path: nil,
 						tns: "http://www.apis-it.hr/fin/2012/types/f73",
 						schemaLocation: "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd",
-						certificate_issued_by: "OU=RDC,O=FINA,C=HR", certificate_p12_path: nil, password: nil)
+						certificate_issued_by: "OU=RDC,O=FINA,C=HR", certificate_p12_path: nil, password: nil, timeout:3)
 			@url = url
 			@key_public_path  = key_public_path
 			@key_private_path = key_private_path
@@ -24,6 +25,7 @@ class Fiscalizer
 			@certificate_p12_path = certificate_p12_path
 			@tns = tns
 			@schemaLocation = schemaLocation
+			@timeout = timeout
 
 			# Import certificates
 			export_keys password
@@ -47,7 +49,8 @@ class Fiscalizer
 			# Send it
 			comm = Fiscalizer::Communication.new 	url: @url, tns: @tns, schemaLocation: @schemaLocation, 
 													key_public: @key_public, key_private: @key_private,
-													certificate: @certificate, certificate_issued_by: @certificate_issued_by
+													certificate: @certificate, certificate_issued_by: @certificate_issued_by,
+													timeout:@timeout
 			raw_response = comm.send echo
 			response = Fiscalizer::Response.new object: echo, html_response: raw_response, tns: @tns
 			return response
@@ -80,7 +83,8 @@ class Fiscalizer
 			# Send it
 			comm = Fiscalizer::Communication.new 	url: @url, tns: @tns, schemaLocation: @schemaLocation, 
 													key_public: @key_public, key_private: @key_private,
-													certificate: @certificate, certificate_issued_by: @certificate_issued_by
+													certificate: @certificate, certificate_issued_by: @certificate_issued_by,
+													timeout:@timeout
 			raw_response = comm.send office
 			response = Fiscalizer::Response.new object: office, html_response: raw_response, tns: @tns
 			return response
@@ -123,7 +127,8 @@ class Fiscalizer
 			# Send it
 			comm = Fiscalizer::Communication.new 	url: @url, tns: @tns, schemaLocation: @schemaLocation, 
 													key_public: @key_public, key_private: @key_private,
-													certificate: @certificate, certificate_issued_by: @certificate_issued_by
+													certificate: @certificate, certificate_issued_by: @certificate_issued_by,
+													timeout:@timeout
 			raw_response = comm.send invoice
 			response = Fiscalizer::Response.new object: invoice, html_response: raw_response, tns: @tns
 			return response

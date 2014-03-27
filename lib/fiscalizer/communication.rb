@@ -2,13 +2,13 @@ class Fiscalizer
 	class Communication
 		attr_accessor 	:url, :tns, :schemaLocation,
 						:key_public, :key_private, :certificate,
-						:certificate_issued_by
+						:certificate_issued_by, :timeout
 
 		def initialize(	tns: "http://www.apis-it.hr/fin/2012/types/f73",
 						url: "https://cis.porezna-uprava.hr:8449/FiskalizacijaService",
 						schemaLocation: "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd",
 						key_public: nil, key_private: nil, certificate: nil,
-						certificate_issued_by: "OU=RDC,O=FINA,C=HR" )
+						certificate_issued_by: "OU=RDC,O=FINA,C=HR", timeout:3 )
 			@tns = tns
 			@url = url
 			@schemaLocation = schemaLocation
@@ -16,6 +16,7 @@ class Fiscalizer
 			@key_private = key_private
 			@certificate = certificate
 			@certificate_issued_by = certificate_issued_by
+			@timeout = timeout
 		end # initialize
 
 		def send object
@@ -27,8 +28,9 @@ class Fiscalizer
 			# Prepare data
 			uri  = URI.parse(@url)
 			http = Net::HTTP.new(uri.host, uri.port)
-			http.use_ssl = true
-			http.cert_store = OpenSSL::X509::Store.new
+			http.read_timeout 	= @timeout
+			http.use_ssl 		= true
+			http.cert_store 	= OpenSSL::X509::Store.new
 			http.cert_store.set_default_paths
 			http.cert_store.add_cert(@certificate)
 			http.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -38,8 +40,8 @@ class Fiscalizer
 			return false if encoded_object.nil?
 
 			# Send it
-			request				  = Net::HTTP::Post.new(uri.request_uri)
-			request.content_type	 = 'application/xml'
+			request					= Net::HTTP::Post.new(uri.request_uri)
+			request.content_type	= 'application/xml'
 			request.body 			= encoded_object
 			response 				= http.request(request)
 
@@ -89,7 +91,7 @@ class Fiscalizer
 				xml = soap_envelope(echo_xml).to_xml
 				object.generated_xml = soap_envelope(echo_xml).to_xml
 				return xml
-			end # send_echo
+			end # encode_echo
 
 			def encode_office object
 				office_request_xml = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
@@ -162,7 +164,7 @@ class Fiscalizer
 				object.generated_xml = signed_xml
 
 				return signed_xml
-			end # send_office
+			end # encode_office
 
 			def encode_invoice object
 				generate_security_code object
