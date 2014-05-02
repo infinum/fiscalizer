@@ -64,7 +64,7 @@ class Fiscalizer
 			# Build data set to generate security code
 			unsigned_code = ""
 			unsigned_code += invoice.pin
-			unsigned_code += invoice.time_sent_str " "
+			unsigned_code += invoice.time_issued_str " "
 			unsigned_code += invoice.issued_number.to_s
 			unsigned_code += invoice.issued_office.to_s
 			unsigned_code += invoice.issued_machine.to_s
