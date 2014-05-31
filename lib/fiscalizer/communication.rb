@@ -32,7 +32,11 @@ class Fiscalizer
 			http.use_ssl 		= true
 			http.cert_store 	= OpenSSL::X509::Store.new
 			http.cert_store.set_default_paths
-			http.cert_store.add_cert(@certificate)
+			begin
+				http.cert_store.add_cert(@certificate)
+			rescue OpenSSL::X509::StoreError
+				puts "Certificate alreay exists"
+			end
 			http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
 			# Encode object
