@@ -1,47 +1,37 @@
 class Fiscalizer
-	class Tax
+  class Tax
+    attr_accessor :base, :rate, :name, :total, :summed
 
-			attr_accessor :base, :rate, :name
+    def initialize(base: 0.0, rate: 0.0, name: '', total: nil, summed: nil)
+      @base = base
+      @rate = rate
+      @name = name
+      @total = total
+      @summed = summed
+    end
 
-			def initialize base: 0.0, rate: 0.0, name: ""
-				@base = base
-				@rate = rate
-				@name = name
-			end # initialize
+    def total
+      total || (base.to_f * (rate.to_f / 100.0)).round(2)
+    end
 
-			# Math
-			def base
-				return @base.to_f.round(2)
-			end # base
+    def summed
+      summed || (base.to_f + total.to_f).round(2)
+    end
 
-			def rate
-				return @rate.to_f.round(2)
-			end # rate
+    def base_str
+      format('%15.2f', base).strip
+    end
 
-			def total
-				return (base * (rate / 100.0) ).round(2)
-			end # total
+    def rate_str
+      format('%3.2f', rate).strip
+    end
 
-			def summed
-				return (base + total).round(2)
-			end # summed
+    def total_str
+      format('%15.2f', total).strip
+    end
 
-			# Convert to string
-			def base_str
-				return ("%15.2f" % base).strip
-			end # base_str
-
-			def rate_str
-				return ("%3.2f" % rate).strip
-			end # rate_str
-
-			def total_str
-				return ("%15.2f" % total).strip
-			end # total_str
-
-			def summed_str
-				return ("%15.2f" % summed ).strip
-			end # summed_str
-
-	end # Tax
-end # Fiscalizer
+    def summed_str
+      format('%15.2f', summed).strip
+    end
+  end
+end
