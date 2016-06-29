@@ -11,11 +11,11 @@ class Fiscalizer
     end
 
     def total
-      total || (base.to_f * (rate.to_f / 100.0)).round(2)
+      @total || (base.to_f * (rate.to_f / 100.0)).round(2)
     end
 
     def summed
-      summed || (base.to_f + total.to_f).round(2)
+      @summed || (base.to_f + total.to_f).round(2)
     end
 
     def base_str
