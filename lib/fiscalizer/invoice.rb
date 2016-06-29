@@ -4,22 +4,22 @@ require 'fiscalizer/fee'
 class Fiscalizer
 	class Invoice
 
-			attr_accessor 	:uuid, :time_sent, :pin, 
-							:in_vat_system, :time_issued, :consistance_mark, 
-							:issued_number, :issued_office, :issued_machine, 
+			attr_accessor 	:uuid, :time_sent, :pin,
+							:in_vat_system, :time_issued, :consistance_mark,
+							:issued_number, :issued_office, :issued_machine,
 							:tax_vat, :tax_spending, :tax_other,
 							:value_tax_liberation, :value_tax_margin, :value_non_taxable,
-							:fees, :summed_total, :payment_method, 
+							:fees, :summed_total, :payment_method,
 							:operator_pin, :security_code, :subsequent_delivery,
 							:paragon_label, :specific_purpose, :unique_identifier,
 							:automatic, :generated_xml
 
-			def initialize(	uuid: nil, time_sent: nil, pin: nil, 
-							in_vat_system: nil, time_issued: nil, consistance_mark: nil, 
-							issued_number: nil, issued_office: nil, issued_machine: nil, 
+			def initialize(	uuid: nil, time_sent: nil, pin: nil,
+							in_vat_system: nil, time_issued: nil, consistance_mark: nil,
+							issued_number: nil, issued_office: nil, issued_machine: nil,
 							tax_vat: [], tax_spending: [], tax_other: [],
 							value_tax_liberation: nil, value_tax_margin: nil, value_non_taxable: nil,
-							fees: [], summed_total: nil, payment_method: nil, 
+							fees: [], summed_total: nil, payment_method: nil,
 							operator_pin: nil, security_code: nil, subsequent_delivery: nil,
 							paragon_label: nil, specific_purpose: nil, unique_identifier: nil,
 							automatic: true)
@@ -80,38 +80,38 @@ class Fiscalizer
 			# Check if all necessary values are present
 			def is_valid
 				# Check values
-				return false if @uuid == nil 				
-				return false if @time_sent == nil 			
-				return false if @pin == nil 				
+				return false if @uuid == nil
+				return false if @time_sent == nil
+				return false if @pin == nil
 				return false if @in_vat_system == nil
-				return false if @time_issued == nil			
-				return false if @consistance_mark == nil	
-				return false if @issued_number == nil		
-				return false if @issued_office == nil		
-				return false if @issued_machine == nil		
-				return false if summed_total == nil			
-				return false if @payment_method == nil		
-				return false if @operator_pin == nil		
-				return false if @security_code == nil		
-				return false if @subsequent_delivery == nil	
+				return false if @time_issued == nil
+				return false if @consistance_mark == nil
+				return false if @issued_number == nil
+				return false if @issued_office == nil
+				return false if @issued_machine == nil
+				return false if summed_total == nil
+				return false if @payment_method == nil
+				return false if @operator_pin == nil
+				return false if @security_code == nil
+				return false if @subsequent_delivery == nil
 
 				# Check taxes
 				tax_vat.each do |tax|
 					return false if tax.name == nil || tax.name.class != String
-					return false if tax.base == nil || tax.base.class != Float
-					return false if tax.rate == nil || tax.rate.class != Float
+					return false if tax.base == nil
+					return false if tax.rate == nil
 				end # tax_vat.each
 
 				tax_spending.each do |tax|
 					return false if tax.name == nil || tax.name.class != String
-					return false if tax.base == nil || tax.base.class != Float
-					return false if tax.rate == nil || tax.rate.class != Float
+					return false if tax.base == nil
+					return false if tax.rate == nil
 				end # tax_spending.each
 
 				tax_other.each do |tax|
 					return false if tax.name == nil || tax.name.class != String
-					return false if tax.base == nil || tax.base.class != Float
-					return false if tax.rate == nil || tax.rate.class != Float
+					return false if tax.base == nil
+					return false if tax.rate == nil
 				end # tax_other.each
 
 				# Check fees
