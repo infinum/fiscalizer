@@ -1,11 +1,9 @@
 class Fiscalizer
-	class Echo
+  class Echo
+    attr_accessor :text, :generated_xml
 
-		attr_accessor :text, :generated_xml	
-
-		def initialize text: "Hello World!"
-			@text = text
-		end # initialize
-
-	end # Echo
+    def initialize(text: 'Hello World!')
+      @text = text
+    end # initialize
+  end # Echo
 end # Fiscalizer
