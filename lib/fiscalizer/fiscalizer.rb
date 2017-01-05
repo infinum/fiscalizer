@@ -7,7 +7,7 @@ require 'fiscalizer/response'
 class Fiscalizer
   # Accessible attributes
   attr_accessor :url, :key_public_path, :key_private_path, :certificate_path,
-                :key_private, :key_public, :certificate,
+                :key_private, :key_public, :certificates,
                 :tns, :schemaLocation, :certificate_issued_by,
                 :timeout
 
@@ -23,6 +23,7 @@ class Fiscalizer
     @key_private_path = key_private_path
     @certificate_path = certificate_path
     @certificate_p12_path = certificate_p12_path
+    @certificates = []
     @tns = tns
     @schemaLocation = schemaLocation
     @timeout = timeout
@@ -38,8 +39,14 @@ class Fiscalizer
       @key_private = OpenSSL::PKey::RSA.new(File.read(@key_private_path))
     end
 
-    if @certificate_path.present? && File.exist?(@certificate_path)
-      @certificate = OpenSSL::X509::Certificate.new(File.read(@certificate_path))
+    if @certificate_path != nil && File.exists?(@certificate_path)
+      blob = IO.binread @certificate_path
+      blobs = blob.split("\n-----END CERTIFICATE-----\n")
+      blobs.each do |blob|
+        blob += "\n-----END CERTIFICATE-----\n" # Does not break DER
+        cert = OpenSSL::X509::Certificate.new blob
+        @certificates << cert
+      end
     end
   end # new
 
@@ -49,7 +56,7 @@ class Fiscalizer
     # Send it
     comm = Fiscalizer::Communication.new(url: @url, tns: @tns, schemaLocation: @schemaLocation,
                                          key_public: @key_public, key_private: @key_private,
-                                         certificate: @certificate,
+                                         certificates: @certificates,
                                          certificate_issued_by: @certificate_issued_by,
                                          timeout: @timeout)
     raw_response = comm.send echo
@@ -89,7 +96,7 @@ class Fiscalizer
     # Send it
     comm = Fiscalizer::Communication.new(url: @url, tns: @tns, schemaLocation: @schemaLocation,
                                          key_public: @key_public, key_private: @key_private,
-                                         certificate: @certificate,
+                                         certificates: @certificates,
                                          certificate_issued_by: @certificate_issued_by,
                                          timeout: @timeout)
     raw_response = comm.send(office)
@@ -141,7 +148,7 @@ class Fiscalizer
     comm =
       Fiscalizer::Communication.new(url: @url, tns: @tns, schemaLocation: @schemaLocation,
                                     key_public: @key_public, key_private: @key_private,
-                                    certificate: @certificate,
+                                    certificates: @certificates,
                                     certificate_issued_by: @certificate_issued_by,
                                     timeout: @timeout)
     raw_response = comm.send invoice
@@ -162,7 +169,7 @@ class Fiscalizer
       @key_public  = OpenSSL::X509::Certificate.new(extracted.certificate)
       @key_private = OpenSSL::PKey::RSA.new(extracted.key)
       if extracted.ca_certs.present? && !extracted.ca_certs.empty?
-        @certificate = OpenSSL::X509::Certificate.new(extracted.ca_certs.first.to_s)
+        @certificates = extracted.ca_certs
       end
     end
   end # export_keys
