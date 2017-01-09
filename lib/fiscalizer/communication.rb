@@ -1,14 +1,14 @@
 class Fiscalizer
   class Communication
-    attr_accessor 	:url, :tns, :schemaLocation,
-      :key_public, :key_private, :certificate,
-      :certificate_issued_by, :timeout
+    attr_accessor :url, :tns, :schemaLocation,
+                  :key_public, :key_private, :certificate,
+                  :certificate_issued_by, :timeout
 
-    def initialize(	tns: "http://www.apis-it.hr/fin/2012/types/f73",
+    def initialize(tns: "http://www.apis-it.hr/fin/2012/types/f73",
                    url: "https://cis.porezna-uprava.hr:8449/FiskalizacijaService",
                    schemaLocation: "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd",
                    key_public: nil, key_private: nil, certificate: nil,
-                   certificate_issued_by: "OU=RDC,O=FINA,C=HR", timeout:3 )
+                   certificate_issued_by: "OU=RDC,O=FINA,C=HR", timeout: 3)
       @tns = tns
       @url = url
       @schemaLocation = schemaLocation

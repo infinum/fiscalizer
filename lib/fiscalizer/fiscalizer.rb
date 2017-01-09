@@ -30,15 +30,15 @@ class Fiscalizer
     # Import certificates
     export_keys password
 
-    if @key_public_path.present? && File.exist?(@key_public_path)
+    if !@key_public_path.nil? && File.exist?(@key_public_path)
       @key_public  = OpenSSL::X509::Certificate.new(File.read(@key_public_path))
     end
 
-    if @key_private_path.present? && File.exist?(@key_private_path)
+    if !@key_private_path.nil? && File.exist?(@key_private_path)
       @key_private = OpenSSL::PKey::RSA.new(File.read(@key_private_path))
     end
 
-    if @certificate_path.present? && File.exist?(@certificate_path)
+    if !@certificate_path.nil? && File.exist?(@certificate_path)
       @certificate = OpenSSL::X509::Certificate.new(File.read(@certificate_path))
     end
   end # new
@@ -52,7 +52,7 @@ class Fiscalizer
                                          certificate: @certificate,
                                          certificate_issued_by: @certificate_issued_by,
                                          timeout: @timeout)
-    raw_response = comm.send echo
+    raw_response = comm.send(echo)
     Fiscalizer::Response.new(object: echo, html_response: raw_response, tns: @tns)
   end # echo
 
@@ -157,11 +157,11 @@ class Fiscalizer
   private
 
   def export_keys(password)
-    if @certificate_p12_path.present? && File.exist?(@certificate_p12_path) && password.present?
+    if !@certificate_p12_path.nil? && File.exist?(@certificate_p12_path) && !password.nil?
       extracted = OpenSSL::PKCS12.new(File.read(@certificate_p12_path), password)
       @key_public  = OpenSSL::X509::Certificate.new(extracted.certificate)
       @key_private = OpenSSL::PKey::RSA.new(extracted.key)
-      if extracted.ca_certs.present? && !extracted.ca_certs.empty?
+      if !extracted.ca_certs.nil? && !extracted.ca_certs.empty?
         @certificate = OpenSSL::X509::Certificate.new(extracted.ca_certs.first.to_s)
       end
     end

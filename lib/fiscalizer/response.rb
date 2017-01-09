@@ -21,7 +21,7 @@ class Fiscalizer
       @tns = tns
       @html_response = html_response
 
-      if automatic && @object.present?
+      if automatic && !@object.nil?
         @type = 0
         @type = 1 if @object.class == Echo
         @type = 2 if @object.class == Office
@@ -29,11 +29,11 @@ class Fiscalizer
       end
 
       # Automatically fill
-      parse_response(@html_response.body) if @html_response.present? && automatic
+      parse_response(@html_response.body) if !@html_response.nil? && automatic
     end # initialize
 
     def generated_xml
-      return @object.generated_xml if @object.present? && @object.respond_to?(:generated_xml)
+      return @object.generated_xml if !@object.nil? && @object.respond_to?(:generated_xml)
       nil
     end # generated_xml
 
@@ -64,7 +64,7 @@ class Fiscalizer
 
     def echo_succeeded
       return false if @object.nil?
-      parse_response_echo(@html_response.body) if @response.nil? && @html_response.present?
+      parse_response_echo(@html_response.body) if @response.nil? && !@html_response.nil?
       return false if @response.nil?
       return true if @object.text == @response
       false
@@ -85,23 +85,23 @@ class Fiscalizer
 
     def parse_response_echo(object)
       @response = Nokogiri::XML(object).root.xpath('//tns:EchoResponse', 'tns' => @tns).first
-      @response = @response.text if @response.present?
+      @response = @response.text unless @response.nil?
     end # parse_response_echo
 
     def parse_response_office(object)
       @uuid = Nokogiri::XML(object).root.xpath('//tns:IdPoruke', 'tns' => @tns).first
       @processed_at = Nokogiri::XML(object).root.xpath('//tns:DatumVrijeme', 'tns' => @tns).first
-      @uuid = @uuid.text if @uuid.present?
-      @processed_at = @processed_at.text if @processed_at.present?
+      @uuid = @uuid.text unless @uuid.nil?
+      @processed_at = @processed_at.text unless @processed_at.nil?
     end # parse_response_office
 
     def parse_response_invoice(object)
       @uuid = Nokogiri::XML(object).root.xpath('//tns:IdPoruke', 'tns' => @tns).first
       @processed_at = Nokogiri::XML(object).root.xpath('//tns:DatumVrijeme', 'tns' => @tns).first
       @unique_identifier = Nokogiri::XML(object).root.xpath('//tns:Jir', 'tns' => @tns).first
-      @uuid = @uuid.text if @uuid.present?
-      @processed_at = @processed_at.text if @processed_at.present?
-      @unique_identifier = @unique_identifier.text if @unique_identifier.present?
+      @uuid = @uuid.text unless @uuid.nil?
+      @processed_at = @processed_at.text unless @processed_at.nil?
+      @unique_identifier = @unique_identifier.text unless @unique_identifier.nil?
     end # parse_response_office
 
     def parse_response_errors(object)
@@ -109,9 +109,9 @@ class Fiscalizer
       raw_errors.each do |raw_error|
         error_code = raw_error.xpath('//tns:SifraGreske', 'tns' => @tns).first
         error_message = raw_error.xpath('//tns:PorukaGreske', 'tns' => @tns).first
-        error_code = error_code.text.strip if error_code.present?
-        error_message = error_message.text.strip if error_message.present?
-        @errors[error_code] = error_message if error_code.present?
+        error_code = error_code.text.strip unless error_code.nil?
+        error_message = error_message.text.strip unless error_message.nil?
+        @errors[error_code] = error_message unless error_code.nil?
       end
     end
   end # Response
