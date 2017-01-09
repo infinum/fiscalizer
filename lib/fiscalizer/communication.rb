@@ -1,20 +1,20 @@
 class Fiscalizer
   class Communication
     attr_accessor :url, :tns, :schemaLocation,
-                  :key_public, :key_private, :certificate,
+                  :key_public, :key_private, :certificates,
                   :certificate_issued_by, :timeout
 
     def initialize(tns: "http://www.apis-it.hr/fin/2012/types/f73",
                    url: "https://cis.porezna-uprava.hr:8449/FiskalizacijaService",
                    schemaLocation: "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd",
-                   key_public: nil, key_private: nil, certificate: nil,
+                   key_public: nil, key_private: nil, certificates: [],
                    certificate_issued_by: "OU=RDC,O=FINA,C=HR", timeout: 3)
       @tns = tns
       @url = url
       @schemaLocation = schemaLocation
       @key_public = key_public
       @key_private = key_private
-      @certificate = certificate
+      @certificates = certificates
       @certificate_issued_by = certificate_issued_by
       @timeout = timeout
     end # initialize
@@ -22,7 +22,7 @@ class Fiscalizer
     def send(object)
       # Check input
       raise "Missing keys" if @key_public == nil || @key_private == nil
-      raise "Missing certificate" if @certificate == nil
+      raise "Missing certificates" if @certificates.empty?
       raise "Can't send nil object" if object == nil
 
       # Prepare data
@@ -32,10 +32,11 @@ class Fiscalizer
       http.use_ssl = true
       http.cert_store = OpenSSL::X509::Store.new
       http.cert_store.set_default_paths
-      begin
-        http.cert_store.add_cert(@certificate)
-      rescue OpenSSL::X509::StoreError
-        puts "Certificate alreay exists"
+      @certificates.each do |certificate|
+        begin
+          http.cert_store.add_cert(certificate)
+        rescue OpenSSL::X509::StoreError
+        end
       end
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
