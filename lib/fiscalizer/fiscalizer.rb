@@ -168,13 +168,8 @@ class Fiscalizer
       extracted = OpenSSL::PKCS12.new(File.read(@certificate_p12_path), password)
       @key_public  = OpenSSL::X509::Certificate.new(extracted.certificate)
       @key_private = OpenSSL::PKey::RSA.new(extracted.key)
-<<<<<<< HEAD
       if !extracted.ca_certs.nil? && !extracted.ca_certs.empty?
-        @certificate = OpenSSL::X509::Certificate.new(extracted.ca_certs.first.to_s)
-=======
-      if extracted.ca_certs.present? && !extracted.ca_certs.empty?
         @certificates = extracted.ca_certs
->>>>>>> 56caa98a1a77d1776b487fe1ea502d0783326092
       end
     end
   end # export_keys
