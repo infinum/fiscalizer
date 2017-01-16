@@ -1,8 +1,8 @@
 module Fiscalizer
   class RequestSender
-    def initialize(fina_cert_path, user_cert_path, password, timeout)
-      @fina_cert_path = fina_cert_path
-      @user_cert_path = user_cert_path
+    def initialize(demo_cert_path, app_cert, password, timeout)
+      @demo_cert_path = demo_cert_path
+      @app_cert = app_cert
       @password = password
       @timeout = timeout
 
@@ -35,16 +35,25 @@ module Fiscalizer
       http.cert_store = OpenSSL::X509::Store.new
       http.cert_store.set_default_paths
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      add_fina_certificates
+      add_trusted_certificates
     end
 
-    def add_fina_certificates
-      certificates.each do |certificate|
+    def add_trusted_certificates
+      # u produkcijskom okruzenju, trusted CA certifikat se nalazi u
+      # istom fileu kao i public i private key
+      # taj file ima ekstenziju .p12 (npr. FISKAL_1.p12)
+      production_certificates.each do |certificate|
         http.cert_store.add_cert(certificate)
       end
+
+      # u testnom okruzenju, treba dodati 2 trusted CA certifikata
+      # ta 2 certifikata se nalaze u jednom .pem fileu (npr. fina_ca.pem)
+      http.cert_store.add_file(demo_cert_path) if demo_cert_path.present?
     end
 
-    def certificates
+    def production_certificates
+      return [] if app_cert.ca_certs.nil?
+      app_cert.ca_certs
     end
   end
 end
