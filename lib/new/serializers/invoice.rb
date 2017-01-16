@@ -33,6 +33,8 @@ module Fiscalizer
           add_invoice_tax_info
           add_invoice_fee_info(xml)
           add_invoice_summary(xml)
+          add_paragon_label(xml)
+          add_specific_purpose(xml)
         end
       end
 
@@ -52,69 +54,17 @@ module Fiscalizer
       end
 
       def add_invoice_tax_info(xml)
-        add_vat_tax(xml)
-        add_spending_tax(xml)
-        add_other_taxes(xml)
-        add_general_tax_info(xml)
-      end
-
-      def add_vat_tax(xml)
-        return if object.tax_vat.empty?
-
-        xml['tns'].Pdv do
-          object.tax_vat.each do |tax|
-            xml['tns'].Porez do
-              xml['tns'].Stopa tax.rate_str
-              xml['tns'].Osnovica tax.base_str
-              xml['tns'].Iznos tax.total_str
-            end
-          end
-        end
-      end
-
-      def add_spending_tax(xml)
-        return if object.tax_spending.empty?
-
-        xml['tns'].Pnp do
-          object.tax_spending.each do |tax|
-            xml['tns'].Porez do
-              xml['tns'].Stopa tax.rate_str
-              xml['tns'].Osnovica tax.base_str
-              xml['tns'].Iznos tax.total_str
-            end
-          end
-        end
-      end
-
-      def add_other_taxes(xml)
-        return if object.tax_other.empty?
-
-        xml['tns'].OstaliPor do
-          object.tax_other.each do |tax|
-            xml['tns'].Porez do
-              xml['tns'].Naziv tax.name
-              xml['tns'].Stopa tax.rate_str
-              xml['tns'].Osnovica tax.base_str
-              xml['tns'].Iznos tax.total_str
-            end
-          end
-        end
-      end
-
-      def add_general_tax_info(xml)
-        xml['tns'].IznosOslobPdv object.value_tax_liberation_str if object.value_tax_liberation_str.present?
-        xml['tns'].IznosMarza object.value_tax_margin_str if object.value_tax_margin_str.present?
-        xml['tns'].IznosNePodlOpor object.value_non_taxable_str if object.value_non_taxable_str.present?
+        Serializers::Tax.new(xml, object).call
       end
 
       def add_invoice_fee_info(xml)
         return if object.fees.empty?
 
         xml['tns'].Naknade do
-          object.fees.each do |tax|
+          object.fees.each do |fee|
             xml['tns'].Naknada do
-              xml['tns'].NazivN tax.name
-              xml['tns'].IznosN tax.value
+              xml['tns'].NazivN fee.name
+              xml['tns'].IznosN fee.value
             end
           end
         end
@@ -126,9 +76,16 @@ module Fiscalizer
         xml['tns'].OibOper object.operator_pin
         xml['tns'].ZastKod object.security_code
         xml['tns'].NakDost object.subsequent_delivery
+      end
 
-        xml['tns'].ParagonBrRac object.paragon_label if object.paragon_label.present?
-        xml['tns'].SpecNamj object.specific_purpose if object.specific_purpose.present?
+      def add_paragon_label(xml)
+        return if object.paragon_label.nil?
+        xml['tns'].ParagonBrRac object.paragon_label
+      end
+
+      def add_specific_purpose(xml)
+        return if object.specific_purpose.nil?
+        xml['tns'].SpecNamj object.specific_purpose
       end
     end
   end
