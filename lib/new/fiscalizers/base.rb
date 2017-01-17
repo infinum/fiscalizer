@@ -14,7 +14,7 @@ module Fiscalizer
       attr_reader :app_cert_path, :password, :timeout, :demo, :demo_cert_path, :object
 
       def call
-        check_echo
+        # check_echo
         send_request
       end
 
@@ -35,7 +35,7 @@ module Fiscalizer
 
       def request_sender
         @request_sender ||=
-          Fiscalizer::RequestSender.new(extracted_app_cert, password, timeout, demo_cert_path)
+          Fiscalizer::RequestSender.new(extracted_app_cert, password, timeout, demo, demo_cert_path)
       end
 
       def app_public_key

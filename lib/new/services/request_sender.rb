@@ -1,10 +1,11 @@
 module Fiscalizer
   class RequestSender
-    def initialize(app_cert, password, timeout, demo_cert_path)
-      @demo_cert_path = demo_cert_path
+    def initialize(app_cert, password, timeout, demo, demo_cert_path)
       @app_cert = app_cert
       @password = password
       @timeout = timeout
+      @demo = demo
+      @demo_cert_path = demo_cert_path
 
       prepare_net_http
     end
@@ -22,7 +23,11 @@ module Fiscalizer
     end
 
     def uri
-      @uri ||= URI.parse(FISCALIZATION_URL)
+      @uri ||= URI.parse(fiscalization_url)
+    end
+
+    def fiscalization_url
+      demo ? DEMO_URL : PROD_URL
     end
 
     def request
