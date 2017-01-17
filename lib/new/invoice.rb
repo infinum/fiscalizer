@@ -56,22 +56,28 @@ class Fiscalizer
     end
 
     def summed_total_str
-      ('%15.2f' % summed_total).strip
+      format_decimal(summed_total)
     end
 
     def value_tax_liberation_str
       return if value_tax_liberation.nil?
-      ('%15.2f' % value_tax_liberation.round(2)).strip
+      format_decimal(value_tax_liberation.round(2))
     end
 
     def value_tax_margin_str
       return if value_tax_margin.nil?
-      ('%15.2f' % value_tax_margin.round(2)).strip
+      format_decimal(value_tax_margin.round(2))
     end
 
     def value_non_taxable_str
       return if value_non_taxable.nil?
-      ('%15.2f' % value_non_taxable.round(2)).strip
+      format_decimal(value_non_taxable.round(2))
+    end
+
+    private
+
+    def format_decimal(value)
+      format('%15.2f', value).strip
     end
   end
 end
