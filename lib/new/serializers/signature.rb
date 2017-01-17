@@ -1,14 +1,14 @@
 module Fiscalizer
   module Serializers
     class Signature
-      def initialize(xml, reference)
+      def initialize(xml, reference, public_key, cert_issuer)
         @xml = xml
         @reference = reference
         @public_key = public_key
-        @certificate_issued_by = certificate_issued_by
+        @cert_issuer = cert_issuer
       end
 
-      attr_reader :xml, :reference, :public_key, :certificate_issued_by
+      attr_reader :xml, :reference, :public_key, :cert_issuer
 
       def call
         xml.Signature('xmlns' => 'http://www.w3.org/2000/09/xmldsig#') do
@@ -44,7 +44,7 @@ module Fiscalizer
           xml.X509Data do
             xml.X509Certificate public_key_string
             xml.X509IssuerSerial do
-              xml.X509IssuerName certificate_issued_by
+              xml.X509IssuerName cert_issuer
               xml.X509SerialNumber '1053520622'
             end
           end

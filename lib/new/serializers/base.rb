@@ -1,14 +1,14 @@
 module Fiscalizer
   module Serializers
     class Base
-      def initialize(object, private_key, public_key, certificate_issued_by)
+      def initialize(object, private_key, public_key, demo)
         @object = object
         @private_key = private_key
         @public_key = public_key
-        @certificate_issued_by = certificate_issued_by
+        @demo = demo
       end
 
-      attr_reader :object, :private_key, :public_key, :certificate_issued_by
+      attr_reader :object, :private_key, :public_key, :demo
 
       def call
         sign_xml
@@ -45,7 +45,11 @@ module Fiscalizer
       end
 
       def add_signature(xml)
-        Serializers::Signature.new(xml, "##{message_id}", public_key, certificate_issued_by).call
+        Serializers::Signature.new(xml, "##{message_id}", public_key, cert_issuer).call
+      end
+
+      def cert_issuer
+        demo ? DEMO_CERT_ISSUER : PROD_CERT_ISSUER
       end
     end
   end

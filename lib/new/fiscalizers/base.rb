@@ -1,15 +1,17 @@
 module Fiscalizer
   module Fiscalizers
     class Base
-      def initialize(demo_cert_path, app_cert_path, password, timeout, object)
-        @demo_cert_path = demo_cert_path
+      # rubocop:disable Metrics/ParameterLists
+      def initialize(app_cert_path, password, timeout, demo, demo_cert_path, object)
         @app_cert_path = app_cert_path
         @password = password
         @timeout = timeout
+        @demo = demo
+        @demo_cert_path = demo_cert_path
         @object = object
       end
 
-      attr_reader :demo_cert_path, :app_cert_path, :password, :timeout, :object
+      attr_reader :app_cert_path, :password, :timeout, :demo, :demo_cert_path, :object
 
       def call
         check_echo
@@ -24,7 +26,7 @@ module Fiscalizer
       end
 
       def request_message
-        serializer.new(object, app_private_key, app_public_key).call
+        serializer.new(object, app_private_key, app_public_key, demo).call
       end
 
       def deserialize(response)
@@ -33,7 +35,7 @@ module Fiscalizer
 
       def request_sender
         @request_sender ||=
-          Fiscalizer::RequestSender.new(demo_cert_path, extracted_app_cert, password, timeout)
+          Fiscalizer::RequestSender.new(extracted_app_cert, password, timeout, demo_cert_path)
       end
 
       def app_public_key

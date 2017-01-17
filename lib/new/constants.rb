@@ -4,5 +4,7 @@ module Fiscalizer
     TNS = 'http://www.apis-it.hr/fin/2012/types/f73'
     XSI = 'http://www.w3.org/2001/XMLSchema-instance'
     SCHEMA_LOCATION = 'http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd'
+    DEMO_CERT_ISSUER = 'OU=DEMO,O=FINA,C=HR'
+    PROD_CERT_ISSUER = 'OU=RDC,O=FINA,C=HR'
   end
 end

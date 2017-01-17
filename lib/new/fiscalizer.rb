@@ -1,14 +1,16 @@
 class Fiscalizer
-  def initialize(demo_cert_path, app_cert_path, password, timeout = 3)
-    @demo_cert_path = demo_cert_path
+  def initialize(app_cert_path:, password:, timeout: 3, demo: false, demo_cert_path: nil)
     @app_cert_path = app_cert_path
     @password = password
     @timeout = timeout
+    @demo = demo
+    @demo_cert_path = demo_cert_path
   end
 
-  attr_reader :demo_cert_path, :app_cert_path, :password, :timeout
+  attr_reader :app_cert_path, :password, :timeout, :demo, :demo_cert_path
 
   def fiscalize_invoice(invoice)
+    # TODO: reconnect attempts?
     fiscalize(Fiscalizers::Invoice, invoice)
   end
 
@@ -20,10 +22,11 @@ class Fiscalizer
 
   def fiscalize(fiscalizer_class, object_to_fiscalize)
     fiscalizer_class.new(
-      demo_cert_path,
       app_cert_path,
       password,
       timeout,
+      demo,
+      demo_cert_path,
       object_to_fiscalize
     ).call
   end

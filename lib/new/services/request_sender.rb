@@ -1,6 +1,6 @@
 module Fiscalizer
   class RequestSender
-    def initialize(demo_cert_path, app_cert, password, timeout)
+    def initialize(app_cert, password, timeout, demo_cert_path)
       @demo_cert_path = demo_cert_path
       @app_cert = app_cert
       @password = password
