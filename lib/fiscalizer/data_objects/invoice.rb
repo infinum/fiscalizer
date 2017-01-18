@@ -1,6 +1,3 @@
-require 'fiscalizer/tax'
-require 'fiscalizer/fee'
-
 class Fiscalizer
   class Invoice
     # rubocop:disable Metrics/ParameterLists, Metrics/AbcSize, Metrics/MethodLength
@@ -33,7 +30,6 @@ class Fiscalizer
       @subsequent_delivery = subsequent_delivery
       @paragon_label = paragon_label
       @specific_purpose = specific_purpose
-      @unique_identifier = unique_identifier
     end
 
     attr_reader :uuid, :time_sent, :pin,
@@ -45,7 +41,7 @@ class Fiscalizer
                 :operator_pin, :subsequent_delivery,
                 :paragon_label, :specific_purpose
 
-    attr_accessor :security_code, :generated_xml
+    attr_accessor :security_code, :unique_identifier, :generated_xml
 
     def time_issued_str(separator = 'T')
       time_issued.strftime("%d.%m.%Y#{separator}%H:%M:%S")

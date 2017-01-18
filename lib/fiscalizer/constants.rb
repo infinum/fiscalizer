@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Constants
     DEMO_URL = 'https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest'
     PROD_URL = 'https://cis.porezna-uprava.hr:8449/FiskalizacijaService'

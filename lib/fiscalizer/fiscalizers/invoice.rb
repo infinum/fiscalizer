@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Fiscalizers
     class Invoice < Base
       def call
@@ -9,7 +9,7 @@ module Fiscalizer
       private
 
       def generate_security_code
-        SecurityCodeGenerator.new(object, private_key).call
+        SecurityCodeGenerator.new(object, app_private_key).call
       end
 
       def serializer

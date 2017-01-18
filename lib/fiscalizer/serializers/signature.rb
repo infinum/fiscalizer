@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Serializers
     class Signature
       def initialize(xml, reference, public_key, cert_issuer)

@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   class SecurityCodeGenerator
     def initialize(invoice, private_key)
       @invoice = invoice
@@ -22,7 +22,7 @@ module Fiscalizer
     end
 
     def unsigned_code
-      invoice.pin + invoice.time_issued_str('') + invoice.issued_number.to_s +
+      invoice.pin + invoice.time_issued_str(' ') + invoice.issued_number.to_s +
         invoice.issued_office.to_s + invoice.issued_machine.to_s + invoice.summed_total_str
     end
   end

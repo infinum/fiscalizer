@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Fiscalizers
     class Office < Base
       private

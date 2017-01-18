@@ -1,7 +1,5 @@
 class Fiscalizer
   class Tax
-    attr_accessor :base, :rate, :name, :total, :summed
-
     def initialize(base: 0.0, rate: 0.0, name: '', total: nil, summed: nil)
       @base = base
       @rate = rate
@@ -9,6 +7,8 @@ class Fiscalizer
       @total = total
       @summed = summed
     end
+
+    attr_accessor :base, :rate, :name, :total, :summed
 
     def total
       @total || (base.to_f * (rate.to_f / 100.0)).round(2)

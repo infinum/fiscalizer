@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Serializers
     class Tax
       def initialize(xml, object)

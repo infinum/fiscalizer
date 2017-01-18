@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Deserializers
     class Invoice < Base
       def unique_identifier

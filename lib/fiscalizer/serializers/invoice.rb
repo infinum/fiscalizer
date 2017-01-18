@@ -1,6 +1,6 @@
-module Fiscalizer
+class Fiscalizer
   module Serializers
-    class Invoice
+    class Invoice < Base
       private
 
       def message_id
@@ -30,7 +30,7 @@ module Fiscalizer
         xml['tns'].Racun do
           add_general_invoice_info(xml)
           add_invoice_number_info(xml)
-          add_invoice_tax_info
+          add_invoice_tax_info(xml)
           add_invoice_fee_info(xml)
           add_invoice_summary(xml)
           add_paragon_label(xml)

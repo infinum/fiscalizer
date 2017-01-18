@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Deserializers
     class Office < Base
     end

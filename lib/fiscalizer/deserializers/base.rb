@@ -1,6 +1,8 @@
-module Fiscalizer
+class Fiscalizer
   module Deserializers
     class Base
+      include Constants
+
       def initialize(raw_response, object)
         @raw_response = raw_response
         @object = object
@@ -22,13 +24,13 @@ module Fiscalizer
 
       def errors
         @errors ||= begin
-          {}.tap do |hash|
+          [].tap do |array|
             error_nodes.each do |error_node|
               code = element_value(error_node, 'SifraGreske')
               message = element_value(error_node, 'PorukaGreske')
               next if code.nil?
 
-              hash[code] = message
+              array << { code: code, message: message }
             end
           end
         end
@@ -37,7 +39,10 @@ module Fiscalizer
       private
 
       def element_value(root_node, element)
-        find(root_node, element).first.try(:text).try(:strip)
+        element = find(root_node, element).first
+        return if element.nil?
+
+        element.text
       end
 
       def find(root_node, element)
@@ -45,7 +50,7 @@ module Fiscalizer
       end
 
       def root
-        Nokogiri::XML(raw_response).root
+        Nokogiri::XML(raw_response.body).root
       end
 
       def error_nodes

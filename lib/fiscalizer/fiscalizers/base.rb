@@ -1,4 +1,4 @@
-module Fiscalizer
+class Fiscalizer
   module Fiscalizers
     class Base
       # rubocop:disable Metrics/ParameterLists
@@ -30,7 +30,7 @@ module Fiscalizer
       end
 
       def deserialize(response)
-        deserializer.new(response)
+        deserializer.new(response, object)
       end
 
       def request_sender

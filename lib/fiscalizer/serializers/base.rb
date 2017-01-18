@@ -1,6 +1,8 @@
-module Fiscalizer
+class Fiscalizer
   module Serializers
     class Base
+      include Constants
+
       def initialize(object, private_key, public_key, demo)
         @object = object
         @private_key = private_key

@@ -1,6 +1,6 @@
-module Fiscalizer
+class Fiscalizer
   module Serializers
-    class Office
+    class Office < Base
       private
 
       def message_id
@@ -49,7 +49,7 @@ module Fiscalizer
       end
 
       def add_address(xml)
-        return if object.address_other.present?
+        return if object.adress_other
 
         xml['tns'].Adresa do
           xml['tns'].Ulica object.adress_street_name
