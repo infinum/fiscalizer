@@ -2,17 +2,17 @@ class Fiscalizer
   class RequestSender
     include Constants
 
-    def initialize(app_cert, password, timeout, demo, demo_cert_path)
+    def initialize(app_cert, password, timeout, demo, ca_cert_path)
       @app_cert = app_cert
       @password = password
       @timeout = timeout
       @demo = demo
-      @demo_cert_path = demo_cert_path
+      @ca_cert_path = ca_cert_path
 
       prepare_net_http
     end
 
-    attr_reader :app_cert, :password, :timeout, :demo, :demo_cert_path
+    attr_reader :app_cert, :password, :timeout, :demo, :ca_cert_path
 
     def send(message)
       request.content_type = 'application/xml'
@@ -57,7 +57,7 @@ class Fiscalizer
 
       # u testnom okruzenju, treba dodati 2 trusted CA certifikata
       # ta 2 certifikata se nalaze u jednom .pem fileu (npr. fina_ca.pem)
-      http.cert_store.add_file(demo_cert_path) unless demo_cert_path.nil?
+      http.cert_store.add_file(ca_cert_path) unless ca_cert_path.nil?
     end
 
     def production_certificates

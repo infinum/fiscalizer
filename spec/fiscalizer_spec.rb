@@ -1,5 +1,5 @@
 describe Fiscalizer do
-  let(:demo_cert_path) { ENV['FISCALIZER_DEMO_CERT_PATH'] }
+  let(:ca_cert_path) { ENV['FISCALIZER_CA_CERT_PATH'] }
   let(:app_cert_path) { ENV['FISCALIZER_APP_CERT_PATH'] }
   let(:password) { ENV['FISCALIZER_PASSWORD'] }
   let(:pin) { ENV['FISCALIZER_PIN'] }
@@ -10,7 +10,7 @@ describe Fiscalizer do
       app_cert_path: app_cert_path,
       password: password,
       demo: true,
-      demo_cert_path: demo_cert_path,
+      ca_cert_path: ca_cert_path,
       timeout: timeout
     )
   end

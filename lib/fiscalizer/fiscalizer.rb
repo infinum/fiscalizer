@@ -1,13 +1,13 @@
 class Fiscalizer
-  def initialize(app_cert_path:, password:, timeout: 3, demo: false, demo_cert_path: nil)
+  def initialize(app_cert_path:, password:, timeout: 3, demo: false, ca_cert_path: nil)
     @app_cert_path = app_cert_path
     @password = password
     @timeout = timeout
     @demo = demo
-    @demo_cert_path = demo_cert_path
+    @ca_cert_path = ca_cert_path
   end
 
-  attr_reader :app_cert_path, :password, :timeout, :demo, :demo_cert_path
+  attr_reader :app_cert_path, :password, :timeout, :demo, :ca_cert_path
 
   def echo(message)
     echo = Echo.new(message: message)
@@ -30,7 +30,7 @@ class Fiscalizer
       password,
       timeout,
       demo,
-      demo_cert_path,
+      ca_cert_path,
       object_to_fiscalize
     ).call
   end
