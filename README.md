@@ -2,19 +2,9 @@
 
 ## Introduction
 
-Fiscalization is the process of transfering various document types from a business entity to the tax authorities with the goal of reducing tax fraud. In Croatia this process can be executed over the Internet, this gem is intended to automate this process.
+Fiscalization is the process of transferring various document types from a business entity to the tax authorities with the goal of reducing tax fraud. In Croatia this process can be executed over the Internet and this gem is intended to automate the process.
 
-## Documentation
-
-Every folder has it's own README file which explanes in detail the files in it.
-
-Examples are located in the `example` folder. Basic setup and fiscalization are demonstrated here.
-
-Tests are located in the `test` folder. Test setup is explaned there.
-
-All classes, in their separate files, are located in the `fiscalizer` folder.
-
-## Instalation
+## Installation
 
 Add this line to your application's Gemfile:
 
@@ -29,43 +19,75 @@ Or install it yourself as:
     $ gem install fiscalizer
 
 ## Usage
+
 ### Setup
-To use Fiscalizer in your projects simply call `fiscalizer = Fiscalizer.new`, this will create a new fiscalizer object for you to interact with.
+To use Fiscalizer in your projects simply call `fiscalizer = Fiscalizer.new` that will create a new fiscalizer object for you to interact with.
 
-Necessary parameters, that have to be set before any fiscalization occures are:
+Necessary parameters that have to be set before any fiscalization occurs are:
 
- * `certificate_p12_path` : Path to your fiscal certificate (usually "FISCAL 1.p12" or "fiscal1.pfx")
+ * `app_cert_path` : Path to your fiscal certificate. (usually "FISCAL_1.p12" or "fiscal1.pfx")
  * `password` : Password that unlocks the certificate
 
-Alternatively you can set these three parameters:
+Optional parameter is:
 
- * `key_public_path` : Path to the public key ( "fiskal1.cert" )
- * `key_private_path` : Path to the private key ( "privateKey.key" )
- * `certificate_path` : Path to the certificate ( "certificate.pem" )
+ * `timeout` : Specifies the number of seconds to wait for Fiscalization server to respond. (defaults to 3)
 
-__NOTE:__ Thise parameters will override the parameters extracted from the P12 certificate!
+Example:
 
-Parameters that can also be set:
+```ruby
+fiscalizer = Fiscalizer.new(
+  app_cert_path: 'path/to/FISCAL_1.p12',
+  password: 'password',
+  timeout: 4
+)
+```
+#### Demo environment
 
- * `url` : Specifies the URL to which the requests will be sent ( defaults to "https://cis.porezna-uprava.hr:8449/FiskalizacijaService")
- * `tns` : Specifies the XML namespaces to use when parsing and encoding objects ( defaults to "http://www.apis-it.hr/fin/2012/types/f73")
- * `schemaLocation` : Specifies the XML schema to be used for XML parsing ( defualts to "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd")
- * `certificate_issued_by` : Certificate issuer identifier to be used in the signature ( defaults to "OU=RDC,O=FINA,C=HR")
+If Fiscalizer is used in demo (test) environment, you need to set 2 additional parameters when initializing `Fiscalizer` object:
+
+* `demo` : Specifies that Fiscalizer should send requests to FINA DEMO server. (boolean)
+* `ca_cert_path` : Specifies the path to your local CA certificates. This file should contain both FINA ROOT CA certificate and FINA DEMO CA certificate. (usually called "fina_ca.pem")
+
+Example:
+
+```ruby
+fiscalizer = Fiscalizer.new(
+  app_cert_path: 'path/to/FISCAL_1.p12',
+  password: 'password',
+  demo: true,
+  ca_cert_path: 'path/to/fina_ca.pem'
+)
+```
 
 ### Fiscalization
 
-This gem offers two types of fiscalization, _Office space_ and _Invoice_ fiscalization. _Echo_ requests are also possible.
+Ficalizer class provides 3 public methods:
 
-All these methods return an `Fiscalizer::Response` object, which is explaned below.
+* `echo(message)`
+* `fiscalize_invoice(invoice)`
+* `fiscalize_office(office)`
 
-#### Invoices
+#### Echo
 
-To fiscalize an invoice call `fiscalizer.fiscalize_invoice` and pass it an `Fiscalizer::Invoice` object.
+Echo method receives a message, sends it to Fiscalization server and returns echo response:
 
-Alternatively it is possible to pass all the arguments needed to build an invoice, this will build an invoice
-and fiscalize it automatically.
+```ruby
+response = fiscalizer.echo('Echo message')
+response.success? # true
+response.echo_response # Echo message
+```
 
-Arguments that can be passed to `fiscalizer.fiscalize_invoice`:
+#### Invoice
+
+To fiscalize the invoice, you first need to create a `Fiscalizer::Invoice` object and pass it to the `fiscalize_invoice` method.
+
+Before the fiscalization process starts, a security code (ZKI) will be generated and assigned to invoice.
+If fiscalization process is successful, response will contain a unique_identifier (JIR). Else, it will contain an array with errors.
+
+Example:
+
+```ruby
+```
 
  * `uuid` : Universally Unique Identifier (String)
  * `time_sent` : Time the invoice fiscalization request was sent (Time)
@@ -93,11 +115,9 @@ Arguments that can be passed to `fiscalizer.fiscalize_invoice`:
  * `unique_identifier` : Unique identifier of the invoice (String)
  * `reconnect_attempts` : Specifies how many times to try establishing a connection, defaults to 3 (Integer)
 
-__Note:__ `summed_total` will return the sum of all taxed values from `tax_vat`, `tax_spending`, `tax_other`
+#### Office
 
-#### Office spaces
-
-To fiscalize an office space call `fiscalizer.fiscalize_office` and pass it an `Fiscalizer::Office` object.
+To fiscalize the office space, you first need to create a `Fiscalizer::Office` object and pass it to the `fiscalize_office` method.
 
 Arguments that can be passed to `fiscalizer.fiscalize_office`:
 
@@ -117,44 +137,6 @@ Arguments that can be passed to `fiscalizer.fiscalize_office`:
  * `closure_mark` : Mark that indicates the cloasure of the office space, send "Z" to close (String)
  * `specific_purpose` : Software manufacturer's PIN number (String)
  * `reconnect_attempts` : Specifies how many times to try establishing a connection, defaults to 3 (Integer)
-
-#### Echo requests
-
-Even though echo requests are not particularly usefull for fiscalization they are described in the API and
-therefore they are also implemented.
-
-To make an echo request call `fiscalizer.echo` and eather pass it na `Fiscalizer::Echo` object or `text: "Your echo text"`
-as an argument.
-
-#### Responses
-
-Response objects are perhaps the most important objects in this Gem.
-They contain pre-parsed information that was returned from the fiscalization servers.
-
-Methods:
- * `type` : Type of the response, 0-Error, 1-Echo, 2-Office, 3-Invoice (Integer)
- * `errors` : Hash containg all errors returned from the server, the key is the error code, and the value is the error explanation (Hash)
- * `object` : Holds the object that generated the response (Echo, Invoice, Office)
- * `uuid` : UUID returned by the server (String)
- * `processed_at` : Time the request was processed (Time)
- * `response` : Text returned in an Echo message (String)
- * `unique_identifier` : Unique invoice identifier (String)
- * `tns` : TNS used to parse the XML responses (String)
- * `html_response` : Raw HTML response (HTTP::Response)
- * `generated_xml` : XML generated for the reqest to which this response belongs (String)
- * `has_error` : Returns true if there are any arrors (Boolean), alia method `errors?`
- * `error_codes` : Returns all error codes in an array (Array containing String)
- * `error_messages` : Returns all error messages in an array (Array containing String)
- * `type_str` : Returnes the response type as a string (String)
- * `echo_succeeded` : Returns true if echo message sent and returned are the same (Boolean)
-
-# Notes
-
-The public and private keys, and signing certificate are automatically extracted from a P12 certificate.
-But the same is not true for a PFX certificate! PFX certificates don't contain a signing certificate and
-therefore one has to be passed as an argument (`certificate_path`) additionaly to the PFX certificate (`certificate_p12_path`)
-
-Direct usage of the `Fiscalizer::Communication` class is not advised!
 
 # Translations
 
@@ -180,7 +162,7 @@ Direct usage of the `Fiscalizer::Communication` class is not advised!
  * __issued_office__ : Oznaka poslovnog prostora
  * __issued_machine__ : Oznaka naplatnog uređaja
  * __tax_vat__ : PDV
- * __tax_spending__ : PNP 
+ * __tax_spending__ : PNP
  * __tax_other__ : Ostali porezi
  * __value_tax_liberation__ : Iznos oslobođenja
  * __value_tax_margin__ : Iznos koji se odnosi na poseban postupak oporezivanja marže
@@ -206,4 +188,4 @@ Fiscalizer is maintained and sponsored by
 
 # License
 
-Phrasing is Copyright © 2014 Infinum. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+Fiscalizer is Copyright © 2017 Infinum. It is free software, and may be redistributed under the terms specified in the LICENSE file.
