@@ -15,7 +15,6 @@ class Fiscalizer
   end
 
   def fiscalize_invoice(invoice)
-    # TODO: reconnect attempts?
     fiscalize(Fiscalizers::Invoice, invoice)
   end
 

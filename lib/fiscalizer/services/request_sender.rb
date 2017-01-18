@@ -18,7 +18,6 @@ class Fiscalizer
       request.content_type = 'application/xml'
       request.body = message
       http.request(request)
-      # TODO: timeout?
     end
 
     private
