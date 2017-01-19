@@ -57,7 +57,7 @@ class Fiscalizer
 
       # u testnom okruzenju, treba dodati 2 trusted CA certifikata
       # ta 2 certifikata se nalaze u jednom .pem fileu (npr. fina_ca.pem)
-      http.cert_store.add_file(ca_cert_path) unless ca_cert_path.nil?
+      http.cert_store.add_file(ca_cert_path) unless ca_cert_path.nil? || ca_cert_path == ''
     end
 
     def production_certificates

@@ -24,14 +24,11 @@ class Fiscalizer
 
       def errors
         @errors ||= begin
-          [].tap do |array|
-            error_nodes.each do |error_node|
-              code = element_value(error_node, 'SifraGreske')
-              message = element_value(error_node, 'PorukaGreske')
-              next if code.nil?
-
-              array << { code: code, message: message }
-            end
+          error_nodes.map do |error_node|
+            {
+              code: element_value(error_node, 'SifraGreske'),
+              message: element_value(error_node, 'PorukaGreske')
+            }
           end
         end
       end

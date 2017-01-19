@@ -6,8 +6,8 @@ require 'fiscalizer/version'
 Gem::Specification.new do |spec|
   spec.name          = 'fiscalizer'
   spec.version       = Fiscalizer::VERSION
-  spec.authors       = ['Stanko Krtalić Rusendić']
-  spec.email         = ['stanko.krtalic-rusendic@infinum.hr']
+  spec.authors       = ['Stanko Krtalić Rusendić', 'Vladimir Rosančić']
+  spec.email         = ['stanko.krtalic@gmail.com', 'vladimir.rosancic@infinum.hr']
   spec.description   = 'Automatic fiscalization'
   spec.summary       = 'A gem that automatically handles fiscalization'
   spec.homepage      = 'https://github.com/infinum/fiscalizer'
