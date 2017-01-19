@@ -144,7 +144,6 @@ ensure
     errors: response.errors
   )
 end
-end
 ```
 
 #### Taxes and Fees
