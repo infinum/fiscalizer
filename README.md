@@ -2,19 +2,9 @@
 
 ## Introduction
 
-Fiscalization is the process of transfering various document types from a business entity to the tax authorities with the goal of reducing tax fraud. In Croatia this process can be executed over the Internet, this gem is intended to automate this process.
+Fiscalization is the process of transferring various document types from a business entity to the tax authorities with the goal of reducing tax fraud. In Croatia this process can be executed over the Internet and this gem is intended to automate the process.
 
-## Documentation
-
-Every folder has it's own README file which explanes in detail the files in it.
-
-Examples are located in the `example` folder. Basic setup and fiscalization are demonstrated here.
-
-Tests are located in the `test` folder. Test setup is explaned there.
-
-All classes, in their separate files, are located in the `fiscalizer` folder.
-
-## Instalation
+## Installation
 
 Add this line to your application's Gemfile:
 
@@ -29,181 +19,207 @@ Or install it yourself as:
     $ gem install fiscalizer
 
 ## Usage
+
 ### Setup
-To use Fiscalizer in your projects simply call `fiscalizer = Fiscalizer.new`, this will create a new fiscalizer object for you to interact with.
+To use Fiscalizer initialize a new Fiscalizer object (`fiscalizer = Fiscalizer.new`) with these arguments:
 
-Necessary parameters, that have to be set before any fiscalization occures are:
-
- * `certificate_p12_path` : Path to your fiscal certificate (usually "FISCAL 1.p12" or "fiscal1.pfx")
+ * `app_cert_path` : Path to your fiscal certificate. (usually "FISCAL_1.p12" or "fiscal1.pfx")
  * `password` : Password that unlocks the certificate
 
-Alternatively you can set these three parameters:
+Optional argument is:
 
- * `key_public_path` : Path to the public key ( "fiskal1.cert" )
- * `key_private_path` : Path to the private key ( "privateKey.key" )
- * `certificate_path` : Path to the certificate ( "certificate.pem" )
+ * `timeout` : Specifies the number of seconds to wait for Fiscalization server to respond. (defaults to 3)
 
-__NOTE:__ Thise parameters will override the parameters extracted from the P12 certificate!
+Example:
 
-Parameters that can also be set:
+```ruby
+fiscalizer = Fiscalizer.new(
+  app_cert_path: 'path/to/FISCAL_1.p12',
+  password: 'password',
+  timeout: 4
+)
+```
+#### Demo environment
 
- * `url` : Specifies the URL to which the requests will be sent ( defaults to "https://cis.porezna-uprava.hr:8449/FiskalizacijaService")
- * `tns` : Specifies the XML namespaces to use when parsing and encoding objects ( defaults to "http://www.apis-it.hr/fin/2012/types/f73")
- * `schemaLocation` : Specifies the XML schema to be used for XML parsing ( defualts to "http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd")
- * `certificate_issued_by` : Certificate issuer identifier to be used in the signature ( defaults to "OU=RDC,O=FINA,C=HR")
+If Fiscalizer is used in demo (test) environment, you need to set 2 additional parameters when initializing `Fiscalizer` object:
+
+* `demo` : Specifies that Fiscalizer should send requests to FINA DEMO server. (boolean)
+* `ca_cert_path` : Specifies the path to trusted CA certificates. This file should contain both FINA ROOT CA certificate and FINA DEMO CA certificate. (usually called "fina_ca.pem")
+
+Example:
+
+```ruby
+fiscalizer = Fiscalizer.new(
+  app_cert_path: 'path/to/FISCAL_1.p12',
+  password: 'password',
+  demo: true,
+  ca_cert_path: 'path/to/fina_ca.pem'
+)
+```
 
 ### Fiscalization
 
-This gem offers two types of fiscalization, _Office space_ and _Invoice_ fiscalization. _Echo_ requests are also possible.
+Ficalizer class provides 3 public methods:
 
-All these methods return an `Fiscalizer::Response` object, which is explaned below.
+* `echo(message)`
+* `fiscalize_invoice(invoice)`
+* `fiscalize_office(office)`
 
-#### Invoices
+#### Echo
 
-To fiscalize an invoice call `fiscalizer.fiscalize_invoice` and pass it an `Fiscalizer::Invoice` object.
+Echo method receives a message, sends it to the Fiscalization server and returns the echo response:
 
-Alternatively it is possible to pass all the arguments needed to build an invoice, this will build an invoice
-and fiscalize it automatically.
+```ruby
+response = fiscalizer.echo('Echo message')
+response.success? # true
+response.echo_response # Echo message
+```
 
-Arguments that can be passed to `fiscalizer.fiscalize_invoice`:
+#### Invoice
 
- * `uuid` : Universally Unique Identifier (String)
- * `time_sent` : Time the invoice fiscalization request was sent (Time)
- * `pin` : The fiscal entitie's PIN number (String)
- * `in_vat_system` : Specifies if the fical entity is in the VAT system (Boolean)
- * `time_issued` : Time the invoice was created (Time)
- * `consistance_mark` : Character that specifes where the invoice was issued, "P" for _Office space_ or "N" for _Payment machine_ (String)
- * `issued_number` : Nummerical invoice identifier (String ot Integer)
- * `issued_office` : Office space identifier where the invoice was issued (String)
- * `issued_machine` : Numerical payment machine identifier (String or Integer)
- * `tax_vat` : Array containing all VAT taxes (Array containing _Fiscalizer::Tax_ objects)
- * `tax_spending` : Array containing all spending taxes (Array containing _Fiscalizer::Tax_ objects)
- * `tax_other` : Array containing all other taxes (Array containing _Fiscalizer::Tax_ objects)
- * `value_tax_liberation` : Ammount that will be submitted for tax liberation (Float)
- * `value_tax_margin` : Ammount that will be subjected to the special tax margin process (Float)
- * `value_non_taxable` : Ammount that isn't subject to any taxing (Float)
- * `fees` : Array containing all fees (Array containing _Fiscalizer::Fee_ objects)
- * `summed_total` : Summed total price of the invoice (Float)
- * `payment_method` : Specifies the payment method, "G" for cash, "K" for card, "C" for check, "T" for transaction, "O" for other (String)
- * `operator_pin` : The PIN number of the person issuing the invoice (String)
- * `security_code` : Security code of the invoice (String)
- * `subsequent_delivery` : Subsequent delivery mark (Boolean)
- * `paragon_label` : Paragon label for invoices that have to be fiscalized after the office space or payment machine has been removed from the fiscalization system (String)
- * `specific_purpose` : This is an additional label in case of further expansion of the fiscalization system (String)
- * `unique_identifier` : Unique identifier of the invoice (String)
- * `reconnect_attempts` : Specifies how many times to try establishing a connection, defaults to 3 (Integer)
+To fiscalize the invoice, you first need to create a `Fiscalizer::Invoice` object and pass it to the `fiscalize_invoice` method.
 
-__Note:__ `summed_total` will return the sum of all taxed values from `tax_vat`, `tax_spending`, `tax_other`
+Before the fiscalization process starts, a `security_code` (ZKI) will be automatically generated and assigned to invoice.
+If the fiscalization process is successful, response will contain a `unique_identifier` (JIR). Else, it will contain an array with errors (each error is a hash with `code` and `message`).
 
-#### Office spaces
+`Fiscalizer::Invoice` object can be initialized with the following arguments:
 
-To fiscalize an office space call `fiscalizer.fiscalize_office` and pass it an `Fiscalizer::Office` object.
+ * `uuid` : Universally Unique Identifier / ID poruke (String, required)
+ * `time_sent` : Time the invoice fiscalization request was sent / Datum i vrijeme slanja (DateTime in format dd.mm.yyyyThh:mm:ss, required)
+ * `pin` : The fiscal entitie's PIN number / OIB obveznika fiskalizacije (String, required)
+ * `in_vat_system` : Specifies if the fical entity is in the VAT system / U sustavu PDV (Boolean, required)
+ * `time_issued` : Time the invoice was created / Datum i vrijeme izdavanja (DateTime, required)
+ * `consistance_mark` : Character that specifes where the invoice was issued, "P" for _Office space_ or "N" for _Payment machine_ / Oznaka slijednosti (String, required)
+ * `issued_number` : Numerical invoice identifier / Brojčana oznaka računa (0-9) (String/Integer, required)
+ * `issued_office` : Office space identifier where the invoice was issued / Oznaka poslovnog prostora (String, required)
+ * `issued_machine` : Numerical payment machine identifier / Oznaka naplatnog uređaja (String/Integer, required)
+ * `tax_vat` : Array containing all VAT taxes / Porez na dodanu vrijednost (Array containing _Fiscalizer::Tax_ objects, optional)
+ * `tax_spending` : Array containing all spending taxes / Porez na potrošnju (Array containing _Fiscalizer::Tax_ objects, optional)
+ * `tax_other` : Array containing all other taxes / Ostali porezi (Array containing _Fiscalizer::Tax_ objects, optional)
+ * `value_tax_liberation` : Amount that will be submitted for tax liberation / Iznos oslobođenja (Float, optional)
+ * `value_tax_margin` : Amount that will be subjected to the special tax margin process / Iznos na koji se odnosi poseban postupak oporezivanja marže (Float, optional)
+ * `value_non_taxable` : Amount that isn't subject to any taxing / Iznos koji ne podliježe oporezivanju (Float, optional)
+ * `fees` : Array containing all fees / Naknade (Array containing _Fiscalizer::Fee_ objects, optional)
+ * `summed_total` : Summed total price of the invoice / Ukupan iznos (Float, required)
+ * `payment_method` : Specifies the payment method, "G" for cash, "K" for card, "C" for check, "T" for transaction, "O" for other / Način plaćanja (String, required)
+ * `operator_pin` : The PIN number of the person issuing the invoice / OIB operatera na naplatnom uređaju (String, required)
+ * `subsequent_delivery` : Subsequent delivery mark / Oznaka naknadne dostave računa (Boolean, required)
+ * `paragon_label` : Paragon label for the invoice that have to be fiscalized after the office space or payment machine has stopped working / Oznaka paragon računa (String, optional)
+ * `specific_purpose` : This is an additional label in case of further expansion of the fiscalization system / Specifična namjena (String, optional)
 
-Arguments that can be passed to `fiscalizer.fiscalize_office`:
+ After the fiscalization process, response object contains these informations:
 
- * `uuid` : Universally Unique Identifier (String)
- * `time_sent` : Time the office space fiscalization request was sent (Time)
- * `pin` : The fiscal entitie's PIN number (String)
- * `office_label` : Office space identifier string (String)
- * `adress_street_name` : Name of the street the where the office space is located (String)
- * `adress_house_num` : House number of the office space (String)
- * `adress_house_num_addendum` : Additional house number of the office space, eg.: "a" or "3/4" (String)
- * `adress_post_num` : Post office number of the office space (String)
- * `adress_settlement` : Settlement name of the office space's location (String)
- * `adress_township` : Township name of the office space's location (String)
- * `adress_other` : Field to specify non standart office spaces, eg.: "web store" (String)
- * `office_time` : Specifies the working hours of the office space, anything is valid (String)
- * `take_effect_date` : Date from which the change takes effect (Time)
- * `closure_mark` : Mark that indicates the cloasure of the office space, send "Z" to close (String)
- * `specific_purpose` : Software manufacturer's PIN number (String)
- * `reconnect_attempts` : Specifies how many times to try establishing a connection, defaults to 3 (Integer)
+ * `raw_response` : XML with the raw response from the Fiscalization server
+ * `uuid` : UUID of the response
+ * `processed_at` : DateTime when the fiscalization is processed
+ * `unique_identifier` : Unique fiscalization identifier of the invoice (JIR) (can be nil if there were errors)
+ * `errors?` : Boolean indicating if there were any errors during the process
+ * `errors` : Array containing errors if any - Each error is a hash with `code` and `message`
 
-#### Echo requests
+ Fiscalizer invoice object contains these informations after the fiscalization:
 
-Even though echo requests are not particularly usefull for fiscalization they are described in the API and
-therefore they are also implemented.
+ * `security_code` : Security code of the invoice (ZKI)
+ * `generated_xml` : XML that was sent to the Fiscalization server
 
-To make an echo request call `fiscalizer.echo` and eather pass it na `Fiscalizer::Echo` object or `text: "Your echo text"`
-as an argument.
+ Example:
 
-#### Responses
+ ```ruby
+ invoice = YourApp::Invoice.find(...)
+ fiscalizer_invoice = Fiscalizer::Invoice.new(...) # convert your invoice to fiscalizer invoice
+ fiscalizer = Fiscalizer.new(
+   app_cert_path: 'path/to/FISCAL_1.p12',
+   password: 'password'
+ )
 
-Response objects are perhaps the most important objects in this Gem.
-They contain pre-parsed information that was returned from the fiscalization servers.
+ begin
+   response = fiscalizer.fiscalize_invoice(fiscalizer_invoice)
+   fail 'Fiscalization error' if response.errors? # or do something with the errors
 
-Methods:
- * `type` : Type of the response, 0-Error, 1-Echo, 2-Office, 3-Invoice (Integer)
- * `errors` : Hash containg all errors returned from the server, the key is the error code, and the value is the error explanation (Hash)
- * `object` : Holds the object that generated the response (Echo, Invoice, Office)
- * `uuid` : UUID returned by the server (String)
- * `processed_at` : Time the request was processed (Time)
- * `response` : Text returned in an Echo message (String)
- * `unique_identifier` : Unique invoice identifier (String)
- * `tns` : TNS used to parse the XML responses (String)
- * `html_response` : Raw HTML response (HTTP::Response)
- * `generated_xml` : XML generated for the reqest to which this response belongs (String)
- * `has_error` : Returns true if there are any arrors (Boolean), alia method `errors?`
- * `error_codes` : Returns all error codes in an array (Array containing String)
- * `error_messages` : Returns all error messages in an array (Array containing String)
- * `type_str` : Returnes the response type as a string (String)
- * `echo_succeeded` : Returns true if echo message sent and returned are the same (Boolean)
+   invoice.update(jir: response.unique_identifier)
+ ensure
+   invoice.update(
+     fiscalization_response: response.raw_response,
+     fiscalization_request: fiscalizer_invoice.generated_xml,
+     zki: fiscalizer_invoice.security_code,
+     errors: response.errors
+   )
+ end
+ ```
 
-# Notes
+#### Taxes and Fees
 
-The public and private keys, and signing certificate are automatically extracted from a P12 certificate.
-But the same is not true for a PFX certificate! PFX certificates don't contain a signing certificate and
-therefore one has to be passed as an argument (`certificate_path`) additionaly to the PFX certificate (`certificate_p12_path`)
+When initializing `Fiscalizer::Invoice`, you can set multiple taxes, as indicated above. Those taxes need to be instances of `Fiscalizer::Tax` class.
 
-Direct usage of the `Fiscalizer::Communication` class is not advised!
+`Fiscalizer::Tax` object can be initialized with the following arguments:
 
-# Translations
+* `base` : Base amount / Iznos osnovice (Float, required)
+* `rate` : Tax rate / Porezna stopa (Float, required)
+* `name` : Tax name / Naziv poreza (String, required)
 
- * __uuid__ : UUID
- * __time_sent__ : Datum i vrijeme slanja
- * __pin__ : OIB
- * __office_label__ : Oznaka poslovnog prostora
- * __adress_street_name__ : Ime ulice
- * __adress_house_num__ : Kućni broj
- * __adress_house_num_addendum__ : Dodatak kućnom broju
- * __adress_post_num__ : Broj pošte
- * __adress_settlement__ : Nasenje
- * __adress_township__ : Općina
- * __adress_other__ : Ostali tipovo poslovnog porstora
- * __office_time__ : Radno vrijeme
- * __take_effect_date__ : Datum početka primjene
- * __closure_mark__ : Oznaka zatvaranja
- * __specific_purpose__ : Specifična namjena
- * __in_vat_system__ : U sustavu PDVa
- * __time_issued__ : Datum i vrijeme izdavanja
- * __consistance_mark__ : Oznaka slijednosti
- * __issued_number__ : Brojčana oznaka računa
- * __issued_office__ : Oznaka poslovnog prostora
- * __issued_machine__ : Oznaka naplatnog uređaja
- * __tax_vat__ : PDV
- * __tax_spending__ : PNP 
- * __tax_other__ : Ostali porezi
- * __value_tax_liberation__ : Iznos oslobođenja
- * __value_tax_margin__ : Iznos koji se odnosi na poseban postupak oporezivanja marže
- * __value_non_taxable__ : Iznos koji ne podlježe oporezivanju
- * __fees__ : Naknade
- * __summed_total__ : Ukupan iznos
- * __payment_method__ : Način plaćanja
- * __operator_pin__ : OIB operatera
- * __security_code__ : Zaštitni kod izdavatelja (ZKI)
- * __subsequent_delivery__ : Oznaka nadoknadne dostave
- * __paragon_label__ : Oznaka paragon računa
- * __specific_purpose__ : Specifična namjena
- * __unique_identifier__ : Jedinstveni identifikator računa (JIR)
- * __base__ : Osnovica
- * __rate__ : Porezna stopa
+Also, you can set multiple fees for the invoice. Fee need to be instance of the `Fiscalizer::Fee` class.
+
+`Fiscalizer::Fee` object can be initialized with the following arguments:
+
+* `name` : Fee name / Naziv naknade (String, required)
+* `value` : Fee amount / Iznos naknade (Float, required)
+
+#### Office
+
+To fiscalize the office space, you first need to create a `Fiscalizer::Office` object and pass it to the `fiscalize_office` method.
+
+`Fiscalizer::Office` object can be initialized with the following arguments:
+
+ * `uuid` : Universally Unique Identifier / ID poruke (String, required)
+ * `time_sent` : Time the office space fiscalization request was sent / Datum i vrijeme slanja (DateTime, required)
+ * `pin` : The fiscal entitie's PIN number / OIB obveznika fiskalizacije (String, required)
+ * `office_label` : Office space identifier / Oznaka poslovnog prostora (String, required)
+ * `adress_street_name` : Street name of the office space / Ulica (String, required if `address_other` is not set)
+ * `adress_house_num` : House number of the office space / Kućni broj (String, required if `address_other` is not set)
+ * `adress_house_num_addendum` : Additional house number of the office space, eg.: "a" or "3/4" / Dodatak kućnom broju (String, optional)
+ * `adress_post_num` : Post office number of the office space / Broj pošte (String, required if `address_other` is not set)
+ * `adress_settlement` : Settlement name of the office space's location / Naselje (String, optional)
+ * `adress_township` : Township name of the office space's location / Naziv općine ili grada (String)
+ * `adress_other` : Field to specify non standard office spaces, eg.: "web store" / Ostali tipovi poslovnog prostora (String, optional)
+ * `office_time` : Specifies the working hours of the office space / Radno vrijeme (String, required)
+ * `take_effect_date` : Date from which the change takes effect / Datum početka primjene (Date, required)
+ * `closure_mark` : Mark that indicates the closure of the office space, send "Z" to close / Oznaka zatvaranja (String, optional)
+ * `specific_purpose` : Software manufacturer's PIN number / Specifična namjena (String, optional)
+
+ After the fiscalization process, response object contains these informations:
+
+ * `raw_response` : XML with the raw response from the Fiscalization server
+ * `uuid` : UUID of the response
+ * `processed_at` : DateTime when the fiscalization is processed
+ * `errors?` : Boolean indicating if there were any errors during the process
+ * `errors` : Array containing errors if any - Each error is a hash with `code` and `message`
+
+ Example:
+
+ ```ruby
+ fiscalizer_office = Fiscalizer::Office.new(...)
+ fiscalizer = Fiscalizer.new(
+   app_cert_path: 'path/to/FISCAL_1.p12',
+   password: 'password'
+ )
+
+ response = fiscalizer.fiscalize_office(fiscalizer_office)
+
+ # do something with the response
+ ```
+
+# Fiscalization specification
+
+The official technical specification for the Fiscalization process can be found
+[here](https://www.porezna-uprava.hr/HR_Fiskalizacija/Stranice/Tehni%C4%8Dke-specifikacije.aspx).
 
 # Credits
 
 Fiscalizer is maintained and sponsored by
-[Infinum](http://www.infinum.co).
+[Infinum](https://infinum.co/).
 
-![Infinum](http://www.infinum.co/system/logo.png)
+![Infinum](https://camo.githubusercontent.com/ce804b9555629d79335cf51c0bd6aedc615aeb3f/68747470733a2f2f696e66696e756d2e636f2f696e66696e756d2e706e67)
 
 # License
 
-Phrasing is Copyright © 2014 Infinum. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+The gem is available as open source under the terms of the
+[MIT License](https://opensource.org/licenses/MIT).

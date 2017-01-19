@@ -1,18 +1,18 @@
 class Fiscalizer
   class Fee
-    attr_accessor :name, :value
-
-    def initialize(name: '', value: 0.0)
+    def initialize(name:, value:)
       @name = name
       @value = value
-    end # initialize
+    end
+
+    attr_accessor :name, :value
 
     def value
       @value.to_f.round(2)
-    end # value
+    end
 
     def value_str
       format('%15.2f', value).strip
-    end # value_str
-  end # Fee
-end # Fiscalize
+    end
+  end
+end
