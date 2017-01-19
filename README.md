@@ -123,28 +123,29 @@ If the fiscalization process is successful, response will contain a `unique_iden
 
  Example:
 
- ```ruby
- invoice = YourApp::Invoice.find(...)
- fiscalizer_invoice = Fiscalizer::Invoice.new(...) # convert your invoice to fiscalizer invoice
- fiscalizer = Fiscalizer.new(
-   app_cert_path: 'path/to/FISCAL_1.p12',
-   password: 'password'
- )
+```ruby
+invoice = YourApp::Invoice.find(...)
+fiscalizer_invoice = Fiscalizer::Invoice.new(...) # convert your invoice to fiscalizer invoice
+fiscalizer = Fiscalizer.new(
+  app_cert_path: 'path/to/FISCAL_1.p12',
+  password: 'password'
+)
 
- begin
-   response = fiscalizer.fiscalize_invoice(fiscalizer_invoice)
-   fail 'Fiscalization error' if response.errors? # or do something with the errors
-
-   invoice.update(jir: response.unique_identifier)
- ensure
-   invoice.update(
-     fiscalization_response: response.raw_response,
-     fiscalization_request: fiscalizer_invoice.generated_xml,
-     zki: fiscalizer_invoice.security_code,
-     errors: response.errors
-   )
- end
- ```
+begin
+  response = fiscalizer.fiscalize_invoice(fiscalizer_invoice)
+  fail 'Fiscalization error' if response.errors? # or do something with the errors
+  
+  invoice.update(jir: response.unique_identifier)
+ensure
+  invoice.update(
+    fiscalization_response: response.raw_response,
+    fiscalization_request: fiscalizer_invoice.generated_xml,
+    zki: fiscalizer_invoice.security_code,
+    errors: response.errors
+  )
+end
+end
+```
 
 #### Taxes and Fees
 
