@@ -1,6 +1,6 @@
 class Fiscalizer
   class Fee
-    def initialize(name: '', value: 0.0)
+    def initialize(name:, value:)
       @name = name
       @value = value
     end

@@ -41,7 +41,7 @@ class Fiscalizer
                 :operator_pin, :subsequent_delivery,
                 :paragon_label, :specific_purpose
 
-    attr_accessor :security_code, :unique_identifier, :generated_xml
+    attr_accessor :security_code, :generated_xml
 
     def time_issued_str(separator = 'T')
       time_issued.strftime("%d.%m.%Y#{separator}%H:%M:%S")

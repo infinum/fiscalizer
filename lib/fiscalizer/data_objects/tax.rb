@@ -1,11 +1,9 @@
 class Fiscalizer
   class Tax
-    def initialize(base: 0.0, rate: 0.0, name: '', total: nil, summed: nil)
+    def initialize(base:, rate:, name:)
       @base = base
       @rate = rate
       @name = name
-      @total = total
-      @summed = summed
     end
 
     attr_accessor :base, :rate, :name, :total, :summed

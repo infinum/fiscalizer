@@ -1,10 +1,10 @@
 class Fiscalizer
   class Office
     # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
-    def initialize(uuid:, time_sent:, pin:, office_label:, take_effect_date: nil,
+    def initialize(uuid:, time_sent:, pin:, office_label:, office_time:, take_effect_date:,
                    adress_street_name: nil, adress_house_num: nil, adress_house_num_addendum: nil,
                    adress_post_num: nil, adress_settlement: nil, adress_township: nil,
-                   adress_other: nil, office_time: nil, closure_mark: nil, specific_purpose: nil)
+                   adress_other: nil, closure_mark: nil, specific_purpose: nil)
 
       @uuid = uuid
       @time_sent = time_sent
