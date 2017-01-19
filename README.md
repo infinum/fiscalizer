@@ -217,7 +217,7 @@ The official technical specification for the Fiscalization process can be found
 Fiscalizer is maintained and sponsored by
 [Infinum](https://infinum.co/).
 
-![Infinum](https://camo.githubusercontent.com/ce804b9555629d79335cf51c0bd6aedc615aeb3f/68747470733a2f2f696e66696e756d2e636f2f696e66696e756d2e706e67)
+<img src="https://infinum.co/infinum.png" width="264">
 
 # License
 
