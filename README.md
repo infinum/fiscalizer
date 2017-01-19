@@ -196,17 +196,17 @@ To fiscalize the office space, you first need to create a `Fiscalizer::Office` o
 
  Example:
 
- ```ruby
- fiscalizer_office = Fiscalizer::Office.new(...)
- fiscalizer = Fiscalizer.new(
-   app_cert_path: 'path/to/FISCAL_1.p12',
-   password: 'password'
- )
+```ruby
+fiscalizer_office = Fiscalizer::Office.new(...)
+fiscalizer = Fiscalizer.new(
+  app_cert_path: 'path/to/FISCAL_1.p12',
+  password: 'password'
+)
 
- response = fiscalizer.fiscalize_office(fiscalizer_office)
+response = fiscalizer.fiscalize_office(fiscalizer_office)
 
- # do something with the response
- ```
+# do something with the response
+```
 
 # Fiscalization specification
 
