@@ -50,7 +50,7 @@ class Fiscalizer
       end
 
       def root
-        Nokogiri::XML(raw_response.body).root
+        Nokogiri::XML(raw_response).root
       end
 
       def error_nodes

@@ -30,7 +30,7 @@ class Fiscalizer
       end
 
       def deserialize(response)
-        deserializer.new(response, object)
+        deserializer.new(response.body, object)
       end
 
       def request_sender
