@@ -19,13 +19,6 @@ class Fiscalizer
         end
       end
 
-      def add_header(xml)
-        xml['tns'].Zaglavlje do
-          xml['tns'].IdPoruke object.uuid
-          xml['tns'].DatumVrijeme object.time_sent_str
-        end
-      end
-
       def add_body(xml)
         xml['tns'].Racun do
           add_general_invoice_info(xml)

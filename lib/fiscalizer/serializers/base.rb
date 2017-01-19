@@ -46,6 +46,13 @@ class Fiscalizer
         }
       end
 
+      def add_header(xml)
+        xml['tns'].Zaglavlje do
+          xml['tns'].IdPoruke object.uuid
+          xml['tns'].DatumVrijeme object.time_sent_str
+        end
+      end
+
       def add_signature(xml)
         Serializers::Signature.new(xml, "##{message_id}", public_key, cert_issuer).call
       end
