@@ -52,7 +52,13 @@ class Fiscalizer
       # istom fileu kao i public i private key
       # taj file ima ekstenziju .p12 (npr. FISKAL_1.p12)
       production_certificates.each do |certificate|
-        http.cert_store.add_cert(certificate)
+        begin
+          http.cert_store.add_cert(certificate)
+        rescue OpenSSL::X509::StoreError => err
+          # ignore duplicate certs
+          # Novi finini certifikati sadze CA koji vec postoje medu default_paths(line 45)
+          raise unless err.message == 'cert already in hash table'
+        end
       end
 
       # u testnom okruzenju, treba dodati 2 trusted CA certifikata
