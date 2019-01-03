@@ -7,19 +7,22 @@ class Fiscalizer
     @ca_cert_path = ca_cert_path
   end
 
-  attr_reader :app_cert_path, :password, :timeout, :demo, :ca_cert_path
+  attr_reader :app_cert_path, :password, :timeout, :demo, :ca_cert_path, :security_code
 
   def echo(message)
     echo = Echo.new(message: message)
-    fiscalize(Fiscalizers::Echo, echo)
+    fiscalize(Fiscalizers::Echo, echo).call
   end
 
   def fiscalize_invoice(invoice)
-    fiscalize(Fiscalizers::Invoice, invoice)
+    fiscalizer = fiscalize(Fiscalizers::Invoice, invoice)
+    response = fiscalizer.call
+    @security_code = fiscalizer.security_code
+    response
   end
 
   def fiscalize_office(office)
-    fiscalize(Fiscalizers::Office, office)
+    fiscalize(Fiscalizers::Office, office).call
   end
 
   private
@@ -32,6 +35,6 @@ class Fiscalizer
       demo,
       ca_cert_path,
       object_to_fiscalize
-    ).call
+    )
   end
 end

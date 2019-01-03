@@ -1,8 +1,10 @@
 class Fiscalizer
   module Fiscalizers
     class Invoice < Base
+      attr_reader :security_code
+
       def call
-        generate_security_code
+        @security_code = generate_security_code
         send_request
       end
 
