@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body>
+ <tns:EchoResponse
+xsi:schemaLocation="http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd "
+xmlns:tns="http://www.apis-it.hr/fin/2012/types/f73">test</tns:EchoResponse>
+ </soap:Body>
+</soap:Envelope>

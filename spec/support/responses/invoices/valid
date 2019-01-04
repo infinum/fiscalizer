@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <soap:Body>
+ <tns:RacunOdgovor
+xsi:schemaLocation="http://www.apis-it.hr/fin/2012/types/f73 ../schema/FiskalizacijaSchema.xsd "
+xmlns:tns="http://www.apis-it.hr/fin/2012/types/f73">
+ <tns:Zaglavlje>
+ <tns:IdPoruke>733362f1-063f-11e2-892e-0800200c9a66</tns:IdPoruke>
+ <tns:DatumVrijeme>01.09.2012T21:10:38</tns:DatumVrijeme>
+ </tns:Zaglavlje>
+ <tns:Jir>6b7749c6-56c1-4cf5-b7f7-9f29cebc9f7f</tns:Jir>
+ </tns:RacunOdgovor>
+ </soap:Body>
+</soap:Envelope> 
