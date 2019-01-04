@@ -13,14 +13,14 @@ class Fiscalizer
 
       attr_reader :app_cert_path, :password, :timeout, :demo, :ca_cert_path, :object
 
-      def call
+      def send_request
         # check_echo
-        send_request
+        make_request
       end
 
       private
 
-      def send_request
+      def make_request
         response = request_sender.send(request_message)
         deserialize(response)
       end

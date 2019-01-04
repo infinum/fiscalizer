@@ -3,9 +3,9 @@ class Fiscalizer
     class Invoice < Base
       attr_reader :security_code
 
-      def call
+      def send_request
         @security_code = generate_security_code
-        send_request
+        make_request
       end
 
       private
