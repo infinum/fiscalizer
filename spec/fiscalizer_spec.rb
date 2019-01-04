@@ -17,7 +17,7 @@ describe Fiscalizer do
   end
 
   context 'echo' do
-    it 'webmock test' do
+    it 'returns status 200' do
       stub_request(:any, demo_url).
         to_return(
           status: 200,
