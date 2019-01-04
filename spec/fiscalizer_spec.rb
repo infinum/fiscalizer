@@ -1,9 +1,10 @@
 describe Fiscalizer do
-  let(:ca_cert_path) { ENV['FISCALIZER_CA_CERT_PATH'] }
-  let(:app_cert_path) { ENV['FISCALIZER_APP_CERT_PATH'] }
-  let(:password) { ENV['FISCALIZER_PASSWORD'] }
-  let(:pin) { ENV['FISCALIZER_PIN'] }
+  let(:ca_cert_path) { 'spec/support/test.pem' }
+  let(:app_cert_path) { 'spec/support/test.p12' }
+  let(:password) { 'infinum1' }
+  let(:pin) { 'test_pin' }
   let(:timeout) { 3 }
+  let(:demo_url) { Fiscalizer::Constants.const_get(:DEMO_URL) }
 
   let(:fiscalizer) do
     Fiscalizer.new(
@@ -16,9 +17,18 @@ describe Fiscalizer do
   end
 
   context 'echo' do
-    it 'should respond with a success' do
-      response = fiscalizer.echo('test')
+    it 'webmock test' do
+      stub_request(:any, demo_url).
+        to_return(
+          status: 200,
+          body: File.read(get_response_file('echo')),
+          headers: { content_type: 'text/xml' }
+        )
+
+      response = fiscalizer.echo('test').send_request
+
       expect(response.success?).to be(true)
+      expect(response.echo_response).to eq('test')
     end
   end
 
@@ -48,13 +58,22 @@ describe Fiscalizer do
 
     context 'valid' do
       it 'should return JIR' do
-        response = fiscalizer.fiscalize_invoice(invoice)
+        stub_request(:any, demo_url).
+          to_return(
+            status: 200,
+            body: File.read(get_response_file('invoices/valid')),
+            headers: { content_type: 'text/xml' }
+          )
+
+        invoice_fiscalizer = fiscalizer.fiscalize_invoice(invoice)
+        response = invoice_fiscalizer.send_request
 
         expect(response.errors?).to be(false)
         expect(invoice.security_code).not_to be(nil)
         expect(response.unique_identifier).not_to be(nil)
         expect(response.uuid).not_to be(nil)
         expect(response.processed_at).not_to be(nil)
+        expect(invoice_fiscalizer.security_code).not_to be(nil)
       end
     end
 
@@ -62,11 +81,21 @@ describe Fiscalizer do
       let(:pin) { '00000000000' }
 
       it 'should return error' do
-        response = fiscalizer.fiscalize_invoice(invoice)
+        stub_request(:any, demo_url).
+          to_return(
+            status: 200,
+            body: File.read(get_response_file('invoices/invalid')),
+            headers: { content_type: 'text/xml' }
+          )
+
+        invoice_fiscalizer = fiscalizer.fiscalize_invoice(invoice)
+        response = invoice_fiscalizer.send_request
+
         expect(response.errors?).to be(true)
         expect(invoice.security_code).not_to be(nil)
         expect(response.unique_identifier).to be(nil)
         expect(response.errors.first[:code]).to eq('s005')
+        expect(invoice_fiscalizer.security_code).not_to be(nil)
       end
     end
 
@@ -74,7 +103,12 @@ describe Fiscalizer do
       let(:timeout) { 0 }
 
       it 'should raise read timeout error' do
-        expect { fiscalizer.fiscalize_invoice(invoice) }.to raise_error(Net::ReadTimeout)
+        stub_request(:any, demo_url).to_raise(Net::ReadTimeout)
+
+        invoice_fiscalizer = fiscalizer.fiscalize_invoice(invoice)
+
+        expect { invoice_fiscalizer.send_request }.to raise_error(Net::ReadTimeout)
+        expect(invoice_fiscalizer.security_code).not_to be(nil)
       end
     end
   end
@@ -99,7 +133,14 @@ describe Fiscalizer do
 
     context 'valid' do
       it 'should fiscalize office' do
-        response = fiscalizer.fiscalize_office(office)
+        stub_request(:any, demo_url).
+          to_return(
+            status: 200,
+            body: File.read(get_response_file('offices/valid')),
+            headers: { content_type: 'text/xml' }
+          )
+
+        response = fiscalizer.fiscalize_office(office).send_request
         expect(response.errors?).to be(false)
         expect(response.uuid).not_to be(nil)
         expect(response.processed_at).not_to be(nil)
@@ -110,7 +151,14 @@ describe Fiscalizer do
       let(:pin) { '00000000000' }
 
       it 'should return error' do
-        response = fiscalizer.fiscalize_office(office)
+        stub_request(:any, demo_url).
+          to_return(
+            status: 200,
+            body: File.read(get_response_file('offices/invalid')),
+            headers: { content_type: 'text/xml' }
+          )
+
+        response = fiscalizer.fiscalize_office(office).send_request
         expect(response.errors?).to be(true)
         expect(response.errors.first[:code]).to eq('s005')
       end
