@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body> <tns:PoslovniProstorOdgovor
+xsi:schemaLocation="http://www.apis-it.hr/fin/2012/types/f73 FiskalizacijaSchema.xsd "
+xmlns:tns="http://www.apis-it.hr/fin/2012/types/f73"><tns:Zaglavlje>
+ <tns:IdPoruke>ca996cc7-fcc3-4c50-961b40c8b875a5e8</tns:IdPoruke><tns:DatumVrijeme>23.10.2012T13:22:34</tns:DatumVrijeme></tns:Zaglavl
+je></tns:PoslovniProstorOdgovor></soap:Body>
+</soap:Envelope> 
