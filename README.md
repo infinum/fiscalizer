@@ -133,15 +133,19 @@ fiscalizer = Fiscalizer.new(
 
 begin
   response = fiscalizer.fiscalize_invoice(fiscalizer_invoice)
+
+  invoice.update(
+    fiscalization_response: response.raw_response,
+    errors: response.errors
+  )
+
   fail 'Fiscalization error' if response.errors? # or do something with the errors
-  
+
   invoice.update(jir: response.unique_identifier)
 ensure
   invoice.update(
-    fiscalization_response: response.raw_response,
     fiscalization_request: fiscalizer_invoice.generated_xml,
-    zki: fiscalizer_invoice.security_code,
-    errors: response.errors
+    zki: fiscalizer_invoice.security_code
   )
 end
 ```
