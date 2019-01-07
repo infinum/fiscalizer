@@ -59,7 +59,7 @@ fiscalizer = Fiscalizer.new(
 
 ### Fiscalization
 
-Ficalizer class provides 3 public methods:
+Ficalizer class provides 3 public methods that initialize a specific Fiscalizer object, upon which you call `send_request` to send a request to tax authorities:
 
 * `echo(message)`
 * `fiscalize_invoice(invoice)`
@@ -70,7 +70,7 @@ Ficalizer class provides 3 public methods:
 Echo method receives a message, sends it to the Fiscalization server and returns the echo response:
 
 ```ruby
-response = fiscalizer.echo('Echo message')
+response = fiscalizer.echo('Echo message').send_request
 response.success? # true
 response.echo_response # Echo message
 ```
@@ -131,17 +131,20 @@ fiscalizer = Fiscalizer.new(
   password: 'password'
 )
 
+invoice_fiscalizer = fiscalizer.fiscalize_invoice(fiscalizer_invoice)
+
 begin
-  response = fiscalizer.fiscalize_invoice(fiscalizer_invoice)
-  fail 'Fiscalization error' if response.errors? # or do something with the errors
-  
+  response = invoice_fiscalizer.send_request
+
+  store_fiscalization_response(response)
+
+  fail 'Fiscalization error' if response.errors?
+
   invoice.update(jir: response.unique_identifier)
 ensure
   invoice.update(
-    fiscalization_response: response.raw_response,
     fiscalization_request: fiscalizer_invoice.generated_xml,
-    zki: fiscalizer_invoice.security_code,
-    errors: response.errors
+    zki: fiscalizer_invoice.security_code
   )
 end
 ```
