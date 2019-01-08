@@ -211,6 +211,49 @@ response = fiscalizer.fiscalize_office(fiscalizer_office)
 # do something with the response
 ```
 
+## Updating from 0.x to 1.x
+
+1. `bundle update fiscalizer`
+2. Add application and server certificate (`FISKAL_1.p12` and `fina_ca.pem`) for development
+3. Change fiscalization option in your fiscalization service
+From
+
+```Ruby
+  {
+    certificate_p12_path: secrets['certificate_p12_path'],
+    certificate_path: secrets['certificate_path'],
+    url: secrets['url'],
+    certificate_issued_by: secrets['certificate_issued_by'],
+    password: secrets['password']
+   }
+```
+
+To
+
+```Ruby
+  {
+    app_cert_path: secrets['app_cert_path'],
+    ca_cert_path: secrets['ca_cert_path'],
+    password: secrets['password'],
+    demo: !Rails.env.production?
+   }
+```
+
+4. Change secrets file
+
+From
+
+```Ruby
+  certificate_p12_path: ...
+```
+
+To
+
+```Ruby
+  app_cert_path: ...
+  ca_cert_path: ...
+```
+
 # Fiscalization specification
 
 The official technical specification for the Fiscalization process can be found
