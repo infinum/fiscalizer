@@ -216,7 +216,8 @@ response = fiscalizer.fiscalize_office(fiscalizer_office)
 1. `bundle update fiscalizer`
 2. Add application and server certificate (`FISKAL_1.p12` and `fina_ca.pem`) for development
 3. Change fiscalization option in your fiscalization service
-From
+
++ From
 
 ```Ruby
   {
@@ -228,7 +229,7 @@ From
    }
 ```
 
-To
++ To
 
 ```Ruby
   {
@@ -241,13 +242,13 @@ To
 
 4. Change secrets file
 
-From
++ From
 
 ```Ruby
   certificate_p12_path: ...
 ```
 
-To
++ To
 
 ```Ruby
   app_cert_path: ...
