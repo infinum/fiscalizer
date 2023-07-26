@@ -43,7 +43,7 @@ class Fiscalizer
       http.use_ssl = true
       http.cert_store = OpenSSL::X509::Store.new
       http.cert_store.set_default_paths
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       add_trusted_certificates
     end
 
