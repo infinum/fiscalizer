@@ -57,7 +57,7 @@ class Fiscalizer
           object.fees.each do |fee|
             xml['tns'].Naknada do
               xml['tns'].NazivN fee.name
-              xml['tns'].IznosN fee.value
+              xml['tns'].IznosN fee.value_str
             end
           end
         end
